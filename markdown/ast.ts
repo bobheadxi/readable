@@ -2,6 +2,7 @@
 
 export type Point = {
   line: number;
+  column: number;
   offset: number;
 };
 
@@ -13,39 +14,58 @@ export type Position = {
 export enum NodeType {
   Root = "root",
   Heading = "heading",
-  Paragraph = "paragraph",
-  Text = "text",
   List = "list",
   ListItem = "listItem",
+
+  Paragraph = "paragraph",
+  Text = "text",
   Code = "code",
+  InlineCode = "inlineCode",
+  Delete = "delete",
+  Strong = "strong",
+  Image = "image",
+  Link = "link",
 
   // Fontmatter
   YAML = "yaml",
 }
 
 export interface Node {
-  type: NodeType
-  position: Position
+  type: NodeType;
+  position: Position;
+}
+
+export function nodeLength(n: Node): number {
+  if (n.position.start.line !== n.position.end.line) {
+    // for multi-line nodes, simply use the length of the value if available
+    if (isValueNode(n)) return n.value.length;
+    else throw new Error(`Cannot take length of multi-line node '${n}'`);
+  }
+  return n.position.start.column - n.position.end.column;
 }
 
 export interface ParentNode extends Node {
-  children: Node[]
+  children: Node[];
 }
 
 export function isParentNode(n: Node): n is ParentNode {
-  return (n as any).children
+  return (n as any).children;
 }
 
 export interface ValueNode extends Node {
-  value: string
+  value: string;
+}
+
+export function isValueNode(n: Node): n is ValueNode {
+  return (n as any).value;
 }
 
 export function isText(n: Node): n is ValueNode {
-  return (n.type === NodeType.Text) && (n as any).value
+  return (n.type === NodeType.Text) && (n as any).value;
 }
 
 export function isDocument(n: ValueNode): boolean {
-  return (n.value === 'Document')
+  return (n.value === "Document");
 }
 
 export type VFile = {

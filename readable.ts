@@ -1,8 +1,8 @@
 import format from "./markdown/format.ts";
 
-import { fixture1 } from "./test/fixtures.ts";
+import fixtures from "./test/fixtures.ts";
 
-const formatted = format(fixture1);
+const formatted = format(fixtures[Deno.args[0]]);
 console.log(formatted);
 
 export {};

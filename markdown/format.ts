@@ -1,9 +1,7 @@
-import { remark } from "../mod.ts";
+import remark from "./remark.ts";
 
 // remark plugins
-import remarkGFM from "https://cdn.skypack.dev/remark-gfm@1.0.0";
-import remarkMath from "https://cdn.skypack.dev/remark-math@4.0.0";
-import remarkFrontmatter from "../plugins/compat/frontmatter.ts";
+import remarkPlugins from "../plugins/remark/mod.ts";
 
 // custom plugins
 import reflowParagraphs from "../plugins/reflowParagraphs.ts";
@@ -12,9 +10,9 @@ import reflowParagraphs from "../plugins/reflowParagraphs.ts";
 export default function format(markdown: string): string {
   let formatted = markdown;
   remark
-    .use(remarkGFM)
-    .use(remarkFrontmatter)
-    .use(remarkMath)
+    .use(remarkPlugins.gfm)
+    .use(remarkPlugins.frontmatter)
+    .use(remarkPlugins.math)
     .use(reflowParagraphs)
     .use({
       // https://github.com/syntax-tree/mdast-util-to-markdown#formatting-options
@@ -34,7 +32,7 @@ export default function format(markdown: string): string {
         ruleSpaces: true,
 
         // text
-        strong: true,
+        strong: "*",
       },
     })
     .process(markdown, (err: any, file: any) => {

@@ -1,12 +1,12 @@
 // CDN distributions of this remark-frontmatter does not seem to work, so adapt from
-//
+// https://github.com/remarkjs/remark-frontmatter
 
 import syntax from "https://jspm.dev/micromark-extension-frontmatter";
 import {
   fromMarkdown,
   toMarkdown,
 } from "https://jspm.dev/mdast-util-frontmatter";
-import { remark } from "../../mod.ts";
+import remark from "../../markdown/remark.ts";
 
 function frontmatter(options: any) {
   var data = remark.data();
