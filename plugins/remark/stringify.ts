@@ -3,7 +3,7 @@
 //
 // For specific configuration options, see
 // https://github.com/syntax-tree/mdast-util-to-markdown#formatting-options
-const remarkStringify = {
+export default {
   settings: {
     // bullets
     bullet: "-",
@@ -22,6 +22,4 @@ const remarkStringify = {
     // text
     strong: "*",
   },
-}
-
-export default remarkStringify
+};

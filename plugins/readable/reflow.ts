@@ -6,7 +6,7 @@ import {
   NodeType,
   ParentNode,
   VFile,
-} from "../markdown/ast.ts";
+} from "../../markdown/ast.ts";
 
 // Inspired by https://sourcegraph.com/github.com/jlevy/atom-flowmark@master/-/blob/lib/remark-smart-word-wrap.js#L130:11
 
@@ -97,16 +97,16 @@ function reflowParagraph(paragraph: ParentNode) {
   // Add a word to the current line.
   function addWord(word: string, isTreePlain: boolean) {
     // Do sentence breaks, as long as the sentence is not crazy short
-    const doSentenceBreak = sentenceEnded && position >= SENTENCE_MIN_MARGIN
+    const doSentenceBreak = sentenceEnded && position >= SENTENCE_MIN_MARGIN;
     if (breakAllowed && doSentenceBreak) {
-      breakLineIfPossible(isTreePlain)
+      breakLineIfPossible(isTreePlain);
     }
-    currentLine.push(word)
+    currentLine.push(word);
 
     // Update state
-    position += word.length + 1
-    sentenceEnded = isEndOfSentenceWord(word)
-    breakAllowed = false // do not break twice
+    position += word.length + 1;
+    sentenceEnded = isEndOfSentenceWord(word);
+    breakAllowed = false; // do not break twice
   }
 
   function addUnbreakableNode(node: Node) {
@@ -147,8 +147,8 @@ function reflowParagraph(paragraph: ParentNode) {
           newText(false);
           const words = splitWords(current.value);
           for (const [j, word] of words.entries()) {
-            breakAllowed = breakAllowed || (j > 0) || words.length === 1
-            addWord(word, isTreePlain)
+            breakAllowed = breakAllowed || (j > 0) || words.length === 1;
+            addWord(word, isTreePlain);
           }
           current.value = getLineBrokenText();
         }
@@ -159,19 +159,19 @@ function reflowParagraph(paragraph: ParentNode) {
   processParagraphTree(paragraph, []);
 }
 
-export default function reflowParagraphs() {
+export default function reflow() {
   // Traverse tree looking for the right group of nodes to process
   function visit(node: Node) {
     if (!isParentNode(node)) {
-      return
+      return;
     }
 
     switch (node.type) {
       case NodeType.Paragraph:
-        reflowParagraph(node)
+        reflowParagraph(node);
 
       default:
-        node.children.forEach((child) => visit(child))
+        node.children.forEach((child) => visit(child));
     }
   }
 
