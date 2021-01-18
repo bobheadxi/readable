@@ -21,7 +21,7 @@ const SENTENCE_MIN_MARGIN = 45;
  */
 function isEndOfSentenceWord(word: string): boolean {
   return !!word.match(
-    /([.?!]['"’”)]?|['"’”)][.?!]|[:;]) *$/,
+    /([.?!]['"’”)]?|['"’”)][.?!]|[:]) *$/,
   );
 }
 
@@ -37,13 +37,13 @@ function splitWords(text: string): string[] {
 
   const words = trimmed.replace(/\s+/g, " ").split(" ");
   if (text.match(/^\s+/)) {
-    words[0] = " " + words[0];
+    // add back trimmed whitespace to start
+    words[0] = ` ${words[0]}`;
   }
-
   if (text.match(/\s+$/)) {
-    words[words.length - 1] = words[words.length - 1] + " ";
+    // add back trimmed whitespace to end
+    words[words.length - 1] = `${words[words.length - 1]} `;
   }
-
   return words;
 }
 
