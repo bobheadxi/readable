@@ -1,8 +1,10 @@
 import format from "./markdown/format.ts";
 
-import fixtures from "./test/fixtures.ts";
+const path = Deno.args[0]
 
-const formatted = format(fixtures[Deno.args[0]]);
-console.log(formatted);
+const f = await Deno.readTextFile(path)
+const formatted = format(f.toString())
+
+Deno.writeTextFile(path, formatted)
 
 export {};
