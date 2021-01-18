@@ -60,14 +60,6 @@ export function isValueNode(n: Node): n is ValueNode {
   return (n as any).value;
 }
 
-export function isText(n: Node): n is ValueNode {
-  return (n.type === NodeType.Text) && (n as any).value;
-}
-
-export function isDocument(n: ValueNode): boolean {
-  return (n.value === "Document");
-}
-
 export type VFile = {
   data: any;
   messages: any[];
