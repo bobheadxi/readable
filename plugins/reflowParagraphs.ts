@@ -11,16 +11,15 @@ import {
 // Inspired by https://sourcegraph.com/github.com/jlevy/atom-flowmark@master/-/blob/lib/remark-smart-word-wrap.js#L130:11
 
 // Do a sentence wrap only after this column.
-const SENTENCE_MIN_MARGIN = 15;
+const SENTENCE_MIN_MARGIN = 45;
 
 /**
- * End of sentence must be two letters or more, with the last letter lowercase,
- * followed by a period, exclamation point, question mark, colon, or semicolon.
+ * End of sentence is marked by a period, exclamation point, question mark, colon, or semicolon.
  * Except for colon or semicolon, a final or preceding parenthesis or quote is allowed.
  */
 function isEndOfSentenceWord(word: string): boolean {
   return !!word.match(
-    /([A-Z\da-z'’][a-z])([.?!]['"’”)]?|['"’”)][.?!]|[:;]) *$/,
+    /([.?!]['"’”)]?|['"’”)][.?!]|[:;]) *$/,
   );
 }
 
@@ -46,13 +45,7 @@ function splitWords(text: string): string[] {
   return words;
 }
 
-function reflowParagraph(paragraph: ParentNode, reflowSet: NodeType[]) {
-  console.debug(
-    "Reflowing paragraph",
-    { reflowSet },
-    Deno.inspect(paragraph, { colors: true, depth: undefined }),
-  );
-
+function reflowParagraph(paragraph: ParentNode) {
   let position = 0;
   let breakAllowed = false;
   let sentenceEnded = false;
@@ -75,56 +68,48 @@ function reflowParagraph(paragraph: ParentNode, reflowSet: NodeType[]) {
 
   function trimTrailingWhitespace() {
     if (currentLine.length > 0) {
-      currentLine[currentLine.length - 1] = currentLine[
-        currentLine.length - 1
-      ].trimEnd();
+      const lastLine = currentLine[currentLine.length - 1];
+      currentLine[currentLine.length - 1] = lastLine.trimEnd();
     }
   }
 
-  // Add linebreak on current text, if allowed.
-  function breakLine(isPlain: boolean) {
-    // If a node isPlain, i.e. not inside a strong/emphasis/link, it's fine to break.
-    // If a node is strong/emphasis/link formatted, we can't break it on the
+  // Add linebreak on current text, if *possible*.
+  //
+  // Whether a break is *allowed* should be checked before this function.
+  function breakLineIfPossible(isPlain: boolean) {
+    // If a node isPlain, i.e. not inside a strong/emphasis/link, it's fine to break
+    // immediately.
+    //
+    // If a node is no plain, strong/emphasis/link formatted, we can't break it on the
     // first character, so have to wait until next opportunity.
+    //
     // Also avoid double breaks.
-    const breakOk = position > 0 && (isPlain || currentLine.length > 0);
+    const breakOk = (position > 0) && (isPlain || currentLine.length > 0);
     if (breakOk) {
       trimTrailingWhitespace();
       currentLine = [];
       lines.push(currentLine);
       resetColumn();
     }
-
     return breakOk;
   }
 
-  function addWord(word: string, followsSpace: boolean, isPlain: boolean) {
-    // Wrap if possible
-    // TODO(@bobheadxi) this heuristic is too aggressive
-    breakAllowed = breakAllowed || followsSpace || word.startsWith(" ");
-    const doSentenceBreak = sentenceEnded && position >= SENTENCE_MIN_MARGIN;
-    if (
-      breakAllowed && doSentenceBreak
-    ) {
-      const didBreak = breakLine(isPlain);
-      if (word === " ") {
-        return;
-      }
-      currentLine.push(didBreak ? word.trimStart() : word);
-    } else {
-      currentLine.push(word);
+  // Add a word to the current line.
+  function addWord(word: string, isTreePlain: boolean) {
+    // Do sentence breaks, as long as the sentence is not crazy short
+    const doSentenceBreak = sentenceEnded && position >= SENTENCE_MIN_MARGIN
+    if (breakAllowed && doSentenceBreak) {
+      breakLineIfPossible(isTreePlain)
     }
+    currentLine.push(word)
 
-    position += word.length + 1;
-    sentenceEnded = isEndOfSentenceWord(word);
-    breakAllowed = word.endsWith(" ");
+    // Update state
+    position += word.length + 1
+    sentenceEnded = isEndOfSentenceWord(word)
+    breakAllowed = false // do not break twice
   }
 
   function addUnbreakableNode(node: Node) {
-    if (breakAllowed) {
-      newText(true);
-    }
-
     position += nodeLength(node);
     sentenceEnded = false;
     breakAllowed = false;
@@ -134,59 +119,59 @@ function reflowParagraph(paragraph: ParentNode, reflowSet: NodeType[]) {
     return lines.map((line) => line.join(" ")).join("\n");
   }
 
-  for (let i = 0; i < paragraph.children.length; ++i) {
-    const current = paragraph.children[i];
-    if (isParentNode(current)) {
-      reflowParagraph(current, reflowSet.concat(current.type));
-      continue;
-    }
+  function processParagraphTree(tree: ParentNode, reflowSet: NodeType[]) {
+    console.debug(
+      "Reflowing paragraph tree",
+      { reflowSet },
+      Deno.inspect(tree, { colors: true, depth: undefined }),
+    );
+    const isTreePlain = reflowSet.length === 0;
 
-    const next = i + 1 < paragraph.children.length && paragraph.children[i + 1];
-    if (!isValueNode(current)) {
-      continue;
-    }
-
-    switch (current.type) {
-      case NodeType.Link: {
-        addUnbreakableNode(current);
+    for (let i = 0; i < tree.children.length; ++i) {
+      const current = tree.children[i];
+      // Handle subtree
+      if (isParentNode(current)) {
+        processParagraphTree(current, reflowSet.concat(current.type));
+        continue;
       }
-      case NodeType.Text: {
-        newText(false);
+      // Ignore nodes that don't have a value for us to manipulate
+      if (!isValueNode(current)) {
+        continue;
+      }
 
-        const isPlain = reflowSet.length === 0;
-        const words = splitWords(current.value);
-        for (const [j, element] of words.entries()) {
-          addWord(element, j > 0, isPlain);
+      switch (current.type) {
+        case NodeType.Link: {
+          addUnbreakableNode(current);
         }
-
-        // Add break at the end of this text node if the next next word/link isn't going to fit.
-        // Unless there is no whitespace at the end of the last text node.
-        if (
-          next &&
-          words[words.length - 1].endsWith(" ")
-        ) {
-          breakLine(isPlain);
+        case NodeType.Text: {
+          newText(false);
+          const words = splitWords(current.value);
+          for (const [j, word] of words.entries()) {
+            breakAllowed = breakAllowed || (j > 0) || words.length === 1
+            addWord(word, isTreePlain)
+          }
+          current.value = getLineBrokenText();
         }
-
-        current.value = getLineBrokenText();
       }
     }
   }
+
+  processParagraphTree(paragraph, []);
 }
 
 export default function reflowParagraphs() {
   // Traverse tree looking for the right group of nodes to process
   function visit(node: Node) {
     if (!isParentNode(node)) {
-      return;
+      return
     }
 
     switch (node.type) {
       case NodeType.Paragraph:
-        reflowParagraph(node, []);
+        reflowParagraph(node)
 
       default:
-        node.children.forEach((child) => visit(child));
+        node.children.forEach((child) => visit(child))
     }
   }
 
