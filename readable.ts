@@ -1,10 +1,25 @@
-import format from "./markdown/format.ts";
+import { cac } from 'https://unpkg.com/cac/mod.ts'
 
-const path = Deno.args[0];
+import fmt from "./cmd/fmt.ts";
 
-const f = await Deno.readTextFile(path);
-const formatted = format(f.toString());
+const cli = cac('readable')
+cli.help()
+cli.showHelpOnExit = true;
 
-Deno.writeTextFile(path, formatted);
+/**
+ * readable fmt
+ */
+cli.command('fmt [...globs]', 'format Markdown')
+  .option('--to-stdout', 'output results to stdout instead of modifying files')
+  .action(async (globs: string[], opts) => {
+    await fmt(globs, opts);
+  })
+
+try {
+  cli.parse();
+} catch (err) {
+  console.error(`${err.message}`);
+  Deno.exit(1)
+}
 
 export {};
