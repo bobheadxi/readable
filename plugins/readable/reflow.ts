@@ -13,6 +13,8 @@ import {
 // Do a sentence wrap only after this column.
 const SENTENCE_MIN_MARGIN = 45;
 
+// TODO: still need a maximum, such that if the next sentence is too long, we must break. either that, or remove min margin
+
 /**
  * End of sentence is marked by a period, exclamation point, question mark, colon, or semicolon.
  * Except for colon or semicolon, a final or preceding parenthesis or quote is allowed.
