@@ -8,7 +8,7 @@ export default async function check(globs: string[]) {
   for (let [path, content] of results) {
     // POC using built-in assert library, maybe a nicer diffing library?
     try {
-      console.log(content.original)
+      console.log(path)
       assertEquals<string>(content.original, content.rendered);
     } catch (err) {
       errors.push(err);
