@@ -11,7 +11,7 @@ export default async function fmt(globs: string[], opts: {
       console.log(content.rendered);
     } else {
       console.log(path);
-      Deno.writeTextFile(path, content.rendered);
+      Deno.writeTextFile(content.fullPath, content.rendered);
     }
   }
 }

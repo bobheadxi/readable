@@ -3,6 +3,7 @@ import { expandGlob } from "https://deno.land/std@0.83.0/fs/mod.ts";
 interface FileContents {
   original: string;
   rendered: string;
+  fullPath: string;
 }
 
 export async function walkGlobs(
@@ -18,10 +19,10 @@ export async function walkGlobs(
       try {
         const contents = await Deno.readTextFile(file.path);
         const contentsStr = contents.toString();
-        const relativePath = file.path.replace(Deno.cwd(), "");
-        results.set(relativePath, {
+        results.set(file.path.replace(Deno.cwd(), ""), {
           original: contentsStr,
           rendered: render(contentsStr),
+          fullPath: file.path,
         });
       } catch (err) {
         throw new Error(`failed to render '${file.path}', aborting: ${err}`);
