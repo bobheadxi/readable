@@ -1,4 +1,4 @@
-import { cac, Command } from "https://unpkg.com/cac/mod.ts";
+import { cac } from "./deps/cac.ts";
 import check from "./cmd/check.ts";
 
 import fmt from "./cmd/fmt.ts";

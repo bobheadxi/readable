@@ -1,4 +1,4 @@
-import { expandGlob } from "https://deno.land/std@0.83.0/fs/mod.ts";
+import { expandGlob } from "../deps/fs.ts";
 
 interface FileContents {
   original: string;

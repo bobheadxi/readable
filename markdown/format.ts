@@ -1,9 +1,19 @@
-import remark from "./remark.ts";
+import remark, { Remark } from "../deps/remark.ts";
+
+import plugins from "../plugins/mod.ts";
+
+let defaultRemark = remark;
+for (const p of plugins) {
+  defaultRemark = defaultRemark.use(p);
+}
 
 // formatting configuration
-export default function format(markdown: string): string {
+export default function format(
+  markdown: string,
+  configuredRemark: Remark = defaultRemark,
+): string {
   let formatted = markdown;
-  remark.process(markdown, (err: any, file: any) => {
+  configuredRemark.process(markdown, (err, file) => {
     if (err) throw err;
     formatted = String(file);
   });

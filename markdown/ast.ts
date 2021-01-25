@@ -59,11 +59,3 @@ export interface ValueNode extends Node {
 export function isValueNode(n: Node): n is ValueNode {
   return (n as any).value;
 }
-
-export type VFile = {
-  data: any;
-  messages: any[];
-  history: any[];
-  cwd: string;
-  contents: string;
-};
