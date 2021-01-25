@@ -1,4 +1,4 @@
-import remark from "./remark.ts";
+import remark from "../deps/remark.ts";
 
 // formatting configuration
 export default function format(markdown: string): string {

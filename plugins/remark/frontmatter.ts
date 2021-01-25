@@ -6,7 +6,7 @@ import {
   fromMarkdown,
   toMarkdown,
 } from "https://jspm.dev/mdast-util-frontmatter";
-import remark from "../../markdown/remark.ts";
+import remark from "../../deps/remark.ts";
 
 function frontmatter(options: any) {
   var data = remark.data();
