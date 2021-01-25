@@ -10,9 +10,8 @@ field: wow
 # Document
 
 hello world! this is a document.
-here is a sentence. and here is another \`sentence\`! with **emphasis** and *italics* and ~strike~ and the end of a sentence.
-
-And here is another paragraph.
+with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github.com/bobheadxi)** and *italics* and ~strike~
+and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
 `;
 
 const fixture2 = `
