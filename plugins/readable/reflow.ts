@@ -5,8 +5,8 @@ import {
   nodeLength,
   NodeType,
   ParentNode,
-  VFile,
 } from "../../markdown/ast.ts";
+import { VFile } from "../../deps/remark.ts";
 
 // Inspired by https://sourcegraph.com/github.com/jlevy/atom-flowmark@master/-/blob/lib/remark-smart-word-wrap.js#L130:11
 
