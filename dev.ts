@@ -33,14 +33,20 @@ const devScripts: { [k: string]: (args: string[]) => Promise<void> } = {
     }
   },
   "readable": async (args) => {
-    const install = args ? args[0] === 'install' : false;
-    const target = [ "./readable.ts"]
+    const install = args ? args[0] === "install" : false;
+    const target = ["./readable.ts"];
     if (!install) {
-      target.push(...args)
+      target.push(...args);
     }
-    const cmd = ["deno", install ? 'install' : 'run', "--unstable", "--allow-read", "--allow-write"]
+    const cmd = [
+      "deno",
+      install ? "install" : "run",
+      "--unstable",
+      "--allow-read",
+      "--allow-write",
+    ];
     if (install) {
-      cmd.push('--force') // force install
+      cmd.push("--force"); // force install
     }
     const p = Deno.run({ cmd: [...cmd, ...target] });
     const { code } = await p.status();
@@ -51,6 +57,7 @@ const devScripts: { [k: string]: (args: string[]) => Promise<void> } = {
 };
 
 if (import.meta.main) {
+  console.debug("Deno", Deno.version);
   const script = Deno.args[0];
   const run = devScripts[script];
   if (!run) {

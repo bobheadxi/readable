@@ -1,0 +1,21 @@
+name: pipeline
+
+on: [push, pull_request]
+
+jobs:
+  fmt:
+    name: fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: denolib/setup-deno@v2
+        with:
+          deno-version: v1.x
+      - run: ./dev.ts fmt check
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: denolib/setup-deno@v2
+        with:
+          deno-version: v1.x
+      - run: ./dev.ts test
