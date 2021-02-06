@@ -3,13 +3,13 @@
 ## Development
 
 ```sh
-deno run --unstable --allow-read --allow-write ./readable.ts
+./dev.ts readable --help
 ```
 
 To install globally:
 
 ```sh
-deno install --unstable --allow-read --allow-write -f ./readable.ts
+./dev.ts readable install
 readable --help
 ```
 

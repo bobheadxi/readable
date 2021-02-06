@@ -27,7 +27,7 @@ cli.command("check [...globs]", "Check Markdown formatting")
  * Show help message on -h and --help flags
  */
 cli.help();
- 
+
 /**
  * Run input commands if run as a script.
  * 
