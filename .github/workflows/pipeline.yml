@@ -7,6 +7,7 @@ jobs:
     name: fmt
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: denolib/setup-deno@v2
         with:
           deno-version: v1.x
@@ -15,6 +16,7 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: denolib/setup-deno@v2
         with:
           deno-version: v1.x
