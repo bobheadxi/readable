@@ -6,7 +6,6 @@ import {
   NodeType,
   ParentNode,
 } from "../../markdown/ast.ts";
-import { VFile } from "../../deps/remark.ts";
 
 // Do a sentence wrap only after this column.
 const SENTENCE_MIN_MARGIN = 45;
@@ -216,8 +215,7 @@ export default function reflow() {
   }
 
   // Plugin function
-  return function transformer(node: Node, file: VFile) {
-    console.debug(file);
+  return function transformer(node: Node) {
     visit(node);
     return node;
   };
