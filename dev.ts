@@ -2,7 +2,23 @@
 
 import { expandGlob } from "./deps/fs.ts";
 
-const devScripts: { [k: string]: (args: string[]) => Promise<void> } = {
+interface DevScripts {
+  [k: string]: (args: string[]) => Promise<void>;
+}
+
+const devScripts: DevScripts = {
+  "help": async () => {
+    console.log(`Available commands:\n`);
+    for (const command of Object.keys(devScripts)) {
+      console.log(`\t${command}`);
+    }
+  },
+  "precommit": async () => {
+    for (const command of ["fmt", "test"]) {
+      console.log(`>>> ${command}`);
+      await devScripts[command]([]);
+    }
+  },
   "fmt": async (args) => {
     const check = args ? args[0] === "check" : false;
     const cmd = ["deno", "fmt"];
@@ -25,7 +41,7 @@ const devScripts: { [k: string]: (args: string[]) => Promise<void> } = {
       }
     }
   },
-  "test": async (args) => {
+  "test": async () => {
     const p = Deno.run({ cmd: ["deno", "test"] });
     const { code } = await p.status();
     if (code) {

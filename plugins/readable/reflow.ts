@@ -1,19 +1,14 @@
 import {
+  isLiteralNode,
   isParentNode,
-  isValueNode,
   Node,
   nodeLength,
   NodeType,
   ParentNode,
 } from "../../markdown/ast.ts";
-import { VFile } from "../../deps/remark.ts";
-
-// Inspired by https://sourcegraph.com/github.com/jlevy/atom-flowmark@master/-/blob/lib/remark-smart-word-wrap.js#L130:11
 
 // Do a sentence wrap only after this column.
 const SENTENCE_MIN_MARGIN = 45;
-
-// TODO: still need a maximum, such that if the next sentence is too long, we must break. either that, or remove min margin
 
 /**
  * End of sentence is marked by a period, exclamation point, question mark, colon, or semicolon.
@@ -47,118 +42,160 @@ function splitWords(text: string): string[] {
   return words;
 }
 
+/**
+ * ReflowParagraphState tracks the state of a paragraph being reflowed.
+ */
+class ReflowParagraphState {
+  /**
+   * Add a word to the paragraph.
+   * 
+   * @param text value of text node
+   * @param plainTree whether or not the text is inside another node
+   */
+  addText(text: string, plainTree: boolean) {
+    this.currentLine = [];
+    this.lines = [this.currentLine];
+    const words = splitWords(text);
+    for (const [j, word] of words.entries()) {
+      if ((j > 0) || words.length === 1) {
+        this.breakAllowed = true;
+      }
+      this.appendWord(word, plainTree);
+    }
+  }
+
+  /**
+   * Add a node that should not be processed to the paragraph.
+   * 
+   * @param node markdown AST node
+   */
+  addRawNode(node: Node) {
+    this.currentColumn += nodeLength(node);
+    this.sentenceEnded = false;
+    this.breakAllowed = false;
+  }
+
+  /**
+   * Export the current lines.
+   */
+  render(): string {
+    return this.lines.map((line) => line.join(" ")).join("\n");
+  }
+
+  /**
+   * Set containing all processed lines within the paragraph
+   */
+  private lines: string[][] = [];
+
+  /**
+   * Position of current column
+   */
+  private currentColumn: number = 0;
+  /**
+   * Words that make up the current line
+   */
+  private currentLine: string[] = [];
+
+  /**
+   * Whether a break is allowed in the current line
+   */
+  private breakAllowed: boolean = false;
+  /**
+   * Whether a sentence end has been detected in the current line
+   */
+  private sentenceEnded: boolean = false;
+
+  /**
+   * Add a word to the current line.
+   * 
+   * @param word individual word text
+   * @param isTreePlain 
+   */
+  private appendWord(word: string, isTreePlain: boolean) {
+    this.breakLineIfPossible(isTreePlain);
+    this.currentLine.push(word);
+    this.currentColumn += word.length + 1;
+    this.sentenceEnded = isEndOfSentenceWord(word);
+  }
+
+  /**
+   * Create a linebreak if appropriate.
+   */
+  private breakLineIfPossible(isPlain: boolean) {
+    // Break whenever we see an end of sentence, given the sentence is not too short.
+    const canSentenceBreak = this.sentenceEnded &&
+      this.currentColumn >= SENTENCE_MIN_MARGIN;
+    // If a node isPlain (i.e. not inside a strong/emphasis/link) it's fine to break
+    // immediately. If not (i.e. is strong/emphasis/link formatted), we can't break it on
+    // the first character, so have to wait until next opportunity.
+    const canBreakLine = (isPlain || this.currentLine.length > 0);
+
+    // Break if all conditions are fulfilled.
+    if (this.breakAllowed && canSentenceBreak && canBreakLine) {
+      this.trimCurrentLine();
+      this.currentLine = [];
+      this.lines.push(this.currentLine); // ref to current line
+
+      this.currentColumn = 0;
+      this.sentenceEnded = false;
+      this.breakAllowed = false; // do not break twice in a row
+    }
+  }
+
+  /**
+   * Trim end off the current line.
+   */
+  private trimCurrentLine() {
+    if (this.currentLine.length > 0) {
+      const length = this.currentLine.length - 1;
+      const last = this.currentLine[length];
+      this.currentLine[length] = last.trimEnd();
+    }
+  }
+}
+
+/**
+ * Reflow the top-level node containing a paragraph.
+ * 
+ * @param paragraph 
+ */
 function reflowParagraph(paragraph: ParentNode) {
-  let position = 0;
-  let breakAllowed = false;
-  let sentenceEnded = false;
-  let currentLine: string[];
-  let lines: string[][] = [];
+  const state = new ReflowParagraphState();
 
-  function resetColumn() {
-    position = 0;
-    sentenceEnded = false;
-    breakAllowed = false;
-  }
+  /**
+   * Visitor function for processing a tree of nodes that consist of parts of the paragraph.
+   */
+  function processParent(tree: ParentNode, parentTypes: NodeType[]) {
+    const isTreePlain = parentTypes.length === 0;
 
-  function newText(withBreak: boolean) {
-    currentLine = [];
-    lines = [currentLine];
-    if (withBreak) {
-      resetColumn();
-    }
-  }
-
-  function trimTrailingWhitespace() {
-    if (currentLine.length > 0) {
-      const lastLine = currentLine[currentLine.length - 1];
-      currentLine[currentLine.length - 1] = lastLine.trimEnd();
-    }
-  }
-
-  // Add linebreak on current text, if *possible*.
-  //
-  // Whether a break is *allowed* should be checked before this function.
-  function breakLineIfPossible(isPlain: boolean) {
-    // If a node isPlain, i.e. not inside a strong/emphasis/link, it's fine to break
-    // immediately.
-    //
-    // If a node is no plain, strong/emphasis/link formatted, we can't break it on the
-    // first character, so have to wait until next opportunity.
-    //
-    // Also avoid double breaks.
-    const breakOk = (position > 0) && (isPlain || currentLine.length > 0);
-    if (breakOk) {
-      trimTrailingWhitespace();
-      currentLine = [];
-      lines.push(currentLine);
-      resetColumn();
-    }
-    return breakOk;
-  }
-
-  // Add a word to the current line.
-  function addWord(word: string, isTreePlain: boolean) {
-    // Do sentence breaks, as long as the sentence is not crazy short
-    const doSentenceBreak = sentenceEnded && position >= SENTENCE_MIN_MARGIN;
-    if (breakAllowed && doSentenceBreak) {
-      breakLineIfPossible(isTreePlain);
-    }
-    currentLine.push(word);
-
-    // Update state
-    position += word.length + 1;
-    sentenceEnded = isEndOfSentenceWord(word);
-    breakAllowed = false; // do not break twice
-  }
-
-  function addUnbreakableNode(node: Node) {
-    position += nodeLength(node);
-    sentenceEnded = false;
-    breakAllowed = false;
-  }
-
-  function getLineBrokenText() {
-    return lines.map((line) => line.join(" ")).join("\n");
-  }
-
-  function processParagraphTree(tree: ParentNode, reflowSet: NodeType[]) {
-    console.debug(
-      "Reflowing paragraph tree",
-      { reflowSet },
-      Deno.inspect(tree, { colors: true, depth: undefined }),
-    );
-    const isTreePlain = reflowSet.length === 0;
-
+    // Process all text in this tree
     for (let i = 0; i < tree.children.length; ++i) {
       const current = tree.children[i];
       // Handle subtree
       if (isParentNode(current)) {
-        processParagraphTree(current, reflowSet.concat(current.type));
+        processParent(current, parentTypes.concat(current.type));
         continue;
       }
       // Ignore nodes that don't have a value for us to manipulate
-      if (!isValueNode(current)) {
+      if (!isLiteralNode(current)) {
         continue;
       }
 
       switch (current.type) {
         case NodeType.Link: {
-          addUnbreakableNode(current);
+          state.addRawNode(current);
+          break;
         }
         case NodeType.Text: {
-          newText(false);
-          const words = splitWords(current.value);
-          for (const [j, word] of words.entries()) {
-            breakAllowed = breakAllowed || (j > 0) || words.length === 1;
-            addWord(word, isTreePlain);
-          }
-          current.value = getLineBrokenText();
+          state.addText(current.value, isTreePlain);
+          current.value = state.render();
+          break;
         }
       }
     }
   }
 
-  processParagraphTree(paragraph, []);
+  processParent(paragraph, []);
 }
 
 export default function reflow() {
@@ -178,8 +215,7 @@ export default function reflow() {
   }
 
   // Plugin function
-  return function transformer(node: Node, file: VFile) {
-    console.debug(file);
+  return function transformer(node: Node) {
     visit(node);
     return node;
   };
