@@ -106,13 +106,26 @@ class ReflowParagraphState {
   private sentenceEnded: boolean = false;
 
   /**
+   * Returns simple string representation of some parts of the state.
+   */
+  toString(): string {
+    return JSON.stringify({
+      lineCount: this.lines.length,
+      currentLine: this.currentLine,
+      currentColumn: this.currentColumn,
+      breakAllowed: this.breakAllowed,
+      sentenceEnded: this.sentenceEnded,
+    });
+  }
+
+  /**
    * Add a word to the current line.
    * 
    * @param word individual word text
    * @param isTreePlain 
    */
   private appendWord(word: string, isTreePlain: boolean) {
-    this.breakLineIfPossible(isTreePlain);
+    this.breakLineIfRequired(isTreePlain);
     this.currentLine.push(word);
     this.currentColumn += word.length + 1;
     this.sentenceEnded = isEndOfSentenceWord(word);
@@ -121,7 +134,7 @@ class ReflowParagraphState {
   /**
    * Create a linebreak if appropriate.
    */
-  private breakLineIfPossible(isPlain: boolean) {
+  private breakLineIfRequired(isPlain: boolean) {
     // Break whenever we see an end of sentence, given the sentence is not too short.
     const canSentenceBreak = this.sentenceEnded &&
       this.currentColumn >= SENTENCE_MIN_MARGIN;
@@ -192,6 +205,8 @@ function reflowParagraph(paragraph: ParentNode) {
           break;
         }
       }
+
+      console.debug(state.toString());
     }
   }
 
