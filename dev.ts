@@ -13,14 +13,25 @@ const devScripts: DevScripts = {
       console.log(`\t${command}`);
     }
   },
-  "precommit": async () => {
+  /**
+   * Checks to run before commit.
+   * 
+   * @param args directories
+   */
+  "precommit": async (args) => {
     for (const command of ["fmt", "test"]) {
       console.log(`>>> ${command}`);
-      await devScripts[command]([]);
+      await devScripts[command](args);
     }
   },
+  /**
+   * Run formatter.
+   * 
+   * @param args 'check' as first to check, rest are directories
+   */
   "fmt": async (args) => {
     const check = args ? args[0] === "check" : false;
+    const dir = check ? args[1] : args[0];
     const cmd = ["deno", "fmt"];
     if (check) {
       cmd.push("--check");
@@ -30,7 +41,7 @@ const devScripts: DevScripts = {
     // 'deno fmt' does not have glob support yet: https://github.com/denoland/deno/issues/6365
     // so we implement our own. this is required because 'deno fmt' now formats markdown,
     // which I don't want.
-    const globPattern = "**/*.ts";
+    const globPattern = `${dir ? `${dir}/` : ""}**/*.ts`;
     console.log(`${check ? "Checking" : "Formatting"} '${globPattern}'`);
     for await (const f of expandGlob(globPattern)) {
       if (!f.name.endsWith(".ts")) continue;
@@ -41,13 +52,23 @@ const devScripts: DevScripts = {
       }
     }
   },
-  "test": async () => {
-    const p = Deno.run({ cmd: ["deno", "test"] });
+  /**
+   * Run tests.
+   * 
+   * @param args directories
+   */
+  "test": async (args) => {
+    const p = Deno.run({ cmd: ["deno", "test", ...args] });
     const { code } = await p.status();
     if (code) {
       throw new Error(`test exited with status ${code}`);
     }
   },
+  /**
+   * Run readable.
+   * 
+   * @param args 'install' as first to install, otherwise 'readable' arguments
+   */
   "readable": async (args) => {
     const install = args ? args[0] === "install" : false;
     const target = ["./readable.ts"];
