@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --unstable --allow-all
+#!/usr/bin/env deno run --unstable --allow-all
 
 import { expandGlob } from "./deps/fs.ts";
 

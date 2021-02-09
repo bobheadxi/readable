@@ -7,15 +7,17 @@ jobs:
     name: fmt
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: denolib/setup-deno@v2
         with:
           deno-version: v1.x
-      - run: ./dev.ts fmt check
+      - run: deno run --unstable --allow-all ./dev.ts fmt check
   test:
     name: test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: denolib/setup-deno@v2
         with:
           deno-version: v1.x
-      - run: ./dev.ts test
+      - run: deno run --unstable --allow-all ./dev.ts test
