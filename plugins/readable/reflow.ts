@@ -47,7 +47,7 @@ function splitWords(text: string): string[] {
  */
 class ReflowParagraphState {
   /**
-   * Add a word to the paragraph.
+   * Add text to the paragraph.
    * 
    * @param text value of text node
    * @param plainTree whether or not the text is inside another node
@@ -182,15 +182,13 @@ function reflowParagraph(paragraph: ParentNode) {
       }
 
       switch (current.type) {
-        case NodeType.Link: {
+        case NodeType.Link:
           state.addRawNode(current);
           break;
-        }
-        case NodeType.Text: {
+        case NodeType.Text:
           state.addText(current.value, isTreePlain);
           current.value = state.render();
           break;
-        }
       }
     }
   }
