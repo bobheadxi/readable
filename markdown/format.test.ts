@@ -1,4 +1,5 @@
-import { assertEquals } from "../deps/asserts.ts";
+import { fail } from "../deps/asserts.ts";
+import { outputDiff } from "../lib/diff.ts";
 
 import format from "./format.ts";
 
@@ -48,7 +49,9 @@ Deno.test({
   name: testSuite,
   fn: () => {
     const got = format(input);
-    assertEquals<string>(got, want);
+    if (outputDiff(want, got)) {
+      fail("Unexpected diff");
+    }
   },
 });
 

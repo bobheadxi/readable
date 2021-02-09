@@ -1,6 +1,7 @@
-import { assertEquals } from "../../deps/asserts.ts";
+import { fail } from "../../deps/asserts.ts";
 import remark from "../../deps/remark.ts";
 import format from "../../markdown/format.ts";
+import { outputDiff } from "../../lib/diff.ts";
 
 import reflow from "./reflow.ts";
 
@@ -43,7 +44,9 @@ with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github
       name: `${testSuite} :: ${testCase.name}`,
       fn: () => {
         const got = format(testCase.input, testRemark);
-        assertEquals<string>(got, testCase.want);
+        if (outputDiff(testCase.want, got)) {
+          fail("Unexpected diff");
+        }
       },
       ...testCase.testArgs,
     });

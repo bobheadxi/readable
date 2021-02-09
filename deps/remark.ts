@@ -18,5 +18,5 @@ export interface Remark {
   data: () => any;
 }
 
-let remark = (remarkImport as any)() as Remark;
+const remark = (remarkImport as any)() as Remark;
 export default remark;
