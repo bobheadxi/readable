@@ -125,16 +125,18 @@ class ReflowParagraphState {
    * @param isTreePlain 
    */
   private appendWord(word: string, isTreePlain: boolean) {
-    this.breakLineIfRequired(isTreePlain);
+    if (this.shouldBreakLine(isTreePlain)) {
+      this.breakLine();
+    }
     this.currentLine.push(word);
     this.currentColumn += word.length + 1;
     this.sentenceEnded = isEndOfSentenceWord(word);
   }
 
   /**
-   * Create a linebreak if appropriate.
+   * Whether or not a line break should be created
    */
-  private breakLineIfRequired(isPlain: boolean) {
+  private shouldBreakLine(isPlain: boolean) {
     // Break whenever we see an end of sentence, given the sentence is not too short.
     const canSentenceBreak = this.sentenceEnded &&
       this.currentColumn >= SENTENCE_MIN_MARGIN;
@@ -143,16 +145,20 @@ class ReflowParagraphState {
     // the first character, so have to wait until next opportunity.
     const canBreakLine = (isPlain || this.currentLine.length > 0);
 
-    // Break if all conditions are fulfilled.
-    if (this.breakAllowed && canSentenceBreak && canBreakLine) {
-      this.trimCurrentLine();
-      this.currentLine = [];
-      this.lines.push(this.currentLine); // ref to current line
+    return this.breakAllowed && canSentenceBreak && canBreakLine;
+  }
 
-      this.currentColumn = 0;
-      this.sentenceEnded = false;
-      this.breakAllowed = false; // do not break twice in a row
-    }
+  /**
+   * Adds a line break.
+   */
+  private breakLine() {
+    this.trimCurrentLine();
+    this.currentLine = [];
+    this.lines.push(this.currentLine); // ref to current line
+
+    this.currentColumn = 0;
+    this.sentenceEnded = false;
+    this.breakAllowed = false; // do not break twice in a row
   }
 
   /**

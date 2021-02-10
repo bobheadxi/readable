@@ -8,9 +8,9 @@ export default async function check(globs: string[]) {
   for (let [path, content] of results) {
     try {
       if (outputDiff(content.rendered, content.original)) {
-        errors.push(`Found unformatted file: '${path}'`)
+        errors.push(`Found unformatted file: '${path}'`);
       } else {
-        console.log(`File OK: ${path}`)
+        console.log(`File OK: ${path}`);
       }
     } catch (err) {
       errors.push(err);
