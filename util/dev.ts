@@ -1,6 +1,4 @@
-#!/usr/bin/env deno run --unstable --allow-all
-
-import { expandGlob } from "./deps/fs.ts";
+import { expandGlob } from "../deps/fs.ts";
 
 interface DevScripts {
   [k: string]: (args: string[]) => Promise<void>;
@@ -17,7 +15,7 @@ const devScripts: DevScripts = {
     );
     console.log(`Available commands:\n`);
     for (const command of Object.keys(devScripts)) {
-      console.log(`  ./dev.ts ${command}`);
+      console.log(`  ${command}`);
     }
     console.log();
   },

@@ -2,9 +2,17 @@ import colors from "../deps/colors.ts";
 import { diffText } from "../deps/diff.ts";
 
 /**
- * Prints coloured diff to console. Returns true if a diff was printed.
+ * Prints coloured diff to console. Returns true if a diff is found.
+ * 
+ * @param expected expected string
+ * @param got got string
+ * @param options configure behaviour of diff
  */
-export function outputDiff(expected: string, got: string): boolean {
+export function diff(
+  expected: string,
+  got: string,
+  options: { print: boolean } = { print: true },
+): boolean {
   const parts = diffText(expected, got);
   let hasDiff = false;
   let diffString = "";
@@ -18,7 +26,7 @@ export function outputDiff(expected: string, got: string): boolean {
       ? colors.bgRed(escapedValue)
       : colors.gray(part.value);
   });
-  if (hasDiff) {
+  if (hasDiff && options?.print) {
     console.log(diffString);
   }
   return hasDiff;

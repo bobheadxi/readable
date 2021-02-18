@@ -1,4 +1,10 @@
 /**
+ * @module test.ts
+ * 
+ * Testing utilities.
+ */
+
+/**
  * Subset of `Deno.TestDefinition` for extending test cases.
  */
 export interface DenoTestArgs {
@@ -14,23 +20,46 @@ export interface DenoTestArgs {
   sanitizeResources?: boolean;
 }
 
-export interface TestCase<InputT, OutputT> {
-  name: string;
+/**
+ * Defines parameters for a test case to be executed in a `testSuite`.
+ */
+export interface TestCase<InputT, OutputT> extends DenoTestArgs {
+  /**
+   * Description for the case being tested
+   */
+  case: string;
+  /**
+   * Input to test
+   */
   input: InputT;
+  /**
+   * Expected output.
+   */
   expect: OutputT;
-  testArgs?: DenoTestArgs;
 }
 
-export function testSuite<InputT, OutputT>(
-  name: string,
-  test: (testCase: TestCase<InputT, OutputT>) => void,
-  cases: TestCase<InputT, OutputT>[],
-) {
-  cases.forEach((testCase) => {
-    Deno.test({
-      name: `${name} :: ${testCase.name}`,
-      fn: () => test(testCase),
-      ...testCase.testArgs,
+/**
+ * Defines a table-driven suite of tests.
+ */
+export class TestSuite<InputT, OutputT> {
+  /**
+   * Create a test suite.
+   * 
+ * @param name name of the test suite, prepended to each test case
+ * @param test function to execute on each test case, expected to call an `assert` or `fail` from the `asserts.ts` module.
+ * @param cases test cases
+   */
+  constructor(
+    name: string,
+    test: (testCase: TestCase<InputT, OutputT>) => void,
+    cases: TestCase<InputT, OutputT>[],
+  ) {
+    cases.forEach((testCase) => {
+      Deno.test({
+        name: `${name} :: ${testCase.case}`,
+        fn: () => test(testCase),
+        ...testCase,
+      });
     });
-  });
+  }
 }

@@ -1,5 +1,5 @@
 import { fail } from "../deps/asserts.ts";
-import { outputDiff } from "../lib/diff.ts";
+import { diff } from "../lib/diff.ts";
 
 import format from "./format.ts";
 
@@ -49,7 +49,7 @@ Deno.test({
   name: testSuite,
   fn: () => {
     const got = format(input);
-    if (outputDiff(want, got)) {
+    if (diff(want, got)) {
       fail("Unexpected diff");
     }
   },

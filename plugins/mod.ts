@@ -1,13 +1,13 @@
-// remark plugins
-import remark from "../plugins/remark/mod.ts";
+// thirdparty plugins (such as official Remark plugins)
+import thirdparty from "../plugins/thirdparty/mod.ts";
 
 // custom plugins
 import readable from "../plugins/readable/mod.ts";
 
 export default [
-  remark.gfm,
-  remark.frontmatter,
-  remark.math,
+  thirdparty.gfm,
+  thirdparty.frontmatter,
+  thirdparty.math,
   readable.reflow,
-  remark.stringify,
+  thirdparty.stringify,
 ];
