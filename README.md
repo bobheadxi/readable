@@ -2,7 +2,28 @@
 
 Opinionated Markdown formatter.
 
+## Usage
+
+Using [Deno](https://deno.land):
+
+```sh
+deno install --unstable --allow-read --allow-write https://deno.land/x/readable/readable.ts
+```
+
+```sh
+readable -h
+```
+
 ## Features
+
+Readable supports basic formatting and validation of formatting with `readable fmt` and `readable check`.
+For example:
+
+```sh
+readable fmt **/*.md
+```
+
+Readable's formatting performs:
 
 - [Semantic line breaks](#semantic-line-breaks).
 - Simple, zero-config, standardized formatting for Markdown elements, generally provided by [`remark-stringify`](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify).
