@@ -4,8 +4,8 @@ import { diffText } from "../deps/diff.ts";
 /**
  * Prints coloured diff to console. Returns true if a diff was printed.
  */
-export function outputDiff(oldStr: string, newStr: string): boolean {
-  const parts = diffText(oldStr, newStr);
+export function outputDiff(expected: string, got: string): boolean {
+  const parts = diffText(expected, got);
   let hasDiff = false;
   let diffString = "";
   parts.forEach((part) => {

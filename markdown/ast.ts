@@ -7,6 +7,10 @@ export type Point = {
   offset: number;
 };
 
+function zeroPoint(): Point {
+  return { line: 0, column: 0, offset: 0 };
+}
+
 /**
  * Position of a node
  */
@@ -14,6 +18,28 @@ export type Position = {
   start: Point;
   end: Point;
 };
+
+export function zeroPosition(): Position {
+  return {
+    start: zeroPoint(),
+    end: zeroPoint(),
+  };
+}
+
+function positionAfter(p: Position, length: number): Position {
+  return {
+    start: {
+      line: p.end.line,
+      column: p.end.column,
+      offset: p.end.offset,
+    },
+    end: {
+      line: p.end.line,
+      column: p.end.column + length,
+      offset: p.end.offset + length,
+    },
+  };
+}
 
 /**
  * Node types - see https://github.com/syntax-tree/mdast#nodes
@@ -64,7 +90,7 @@ export function nodeLength(n: Node): number {
     if (isLiteralNode(n)) return n.value.length;
     else throw new Error(`Cannot take length of multi-line node '${n}'`);
   }
-  return n.position.start.column - n.position.end.column;
+  return n.position.end.column - n.position.start.column;
 }
 
 /**
@@ -93,4 +119,12 @@ export interface LiteralNode extends Node {
  */
 export function isLiteralNode(n: Node): n is LiteralNode {
   return (n as any).value;
+}
+
+export function newTextNode(value: string, after: Position): LiteralNode {
+  return {
+    type: NodeType.Text,
+    value,
+    position: positionAfter(after, value.length),
+  };
 }

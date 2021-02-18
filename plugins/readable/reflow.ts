@@ -1,6 +1,7 @@
 import {
   isLiteralNode,
   isParentNode,
+  newTextNode,
   Node,
   nodeLength,
   NodeType,
@@ -68,11 +69,19 @@ class ReflowParagraphState {
    * Add a node that should not be processed to the paragraph.
    * 
    * @param node markdown AST node
+   * @returns whether or not a line break should be created before adding this node
    */
-  addRawNode(node: Node) {
+  addRawNode(node: Node): boolean {
+    let brokeLine = false;
+    if (this.shouldBreakLine()) {
+      this.breakLine();
+      brokeLine = true;
+    }
+
     this.currentColumn += nodeLength(node);
     this.sentenceEnded = false;
     this.breakAllowed = false;
+    return brokeLine;
   }
 
   /**
@@ -111,10 +120,10 @@ class ReflowParagraphState {
   toString(): string {
     return JSON.stringify({
       lineCount: this.lines.length,
-      currentLine: this.currentLine,
       currentColumn: this.currentColumn,
       breakAllowed: this.breakAllowed,
       sentenceEnded: this.sentenceEnded,
+      currentLine: this.currentLine,
     });
   }
 
@@ -134,17 +143,17 @@ class ReflowParagraphState {
   }
 
   /**
-   * Whether or not a line break should be created
+   * Whether or not a line break should be created, based on the state of the current
+   * accumulated sentence.
    */
-  private shouldBreakLine(isPlain: boolean) {
+  private shouldBreakLine(isPlain: boolean = true) {
     // Break whenever we see an end of sentence, given the sentence is not too short.
     const canSentenceBreak = this.sentenceEnded &&
       this.currentColumn >= SENTENCE_MIN_MARGIN;
     // If a node isPlain (i.e. not inside a strong/emphasis/link) it's fine to break
     // immediately. If not (i.e. is strong/emphasis/link formatted), we can't break it on
     // the first character, so have to wait until next opportunity.
-    const canBreakLine = (isPlain || this.currentLine.length > 0);
-
+    const canBreakLine = (isPlain || this.currentColumn > 0);
     return this.breakAllowed && canSentenceBreak && canBreakLine;
   }
 
@@ -152,6 +161,7 @@ class ReflowParagraphState {
    * Adds a line break.
    */
   private breakLine() {
+    console.debug("Breaking line");
     this.trimCurrentLine();
     this.currentLine = [];
     this.lines.push(this.currentLine); // ref to current line
@@ -186,31 +196,53 @@ function reflowParagraph(paragraph: ParentNode) {
    */
   function processParent(tree: ParentNode, parentTypes: NodeType[]) {
     const isTreePlain = parentTypes.length === 0;
+    let previous: Node | undefined;
 
     // Process all text in this tree
     for (let i = 0; i < tree.children.length; ++i) {
       const current = tree.children[i];
-      // Handle subtree
-      if (isParentNode(current)) {
-        processParent(current, parentTypes.concat(current.type));
-        continue;
-      }
-      // Ignore nodes that don't have a value for us to manipulate
-      if (!isLiteralNode(current)) {
-        continue;
-      }
 
       switch (current.type) {
-        case NodeType.Link:
-          state.addRawNode(current);
-          break;
-        case NodeType.Text:
+        case NodeType.Text: // Normal text
+          // Ignore nodes that don't have a value for us to manipulate
+          if (!isLiteralNode(current)) {
+            continue;
+          }
+          console.debug("Adding text node", state.toString());
           state.addText(current.value, isTreePlain);
           current.value = state.render();
           break;
+
+        // Unbreakable nodes
+
+        case NodeType.Link:
+        case NodeType.InlineCode:
+          console.debug(
+            `Adding unbreakable '${current.type}' node`,
+            state.toString(),
+          );
+          // Since we aren't just breaking the value of a text node, we need to make
+          // adjustments to the previous node or the tree.
+          const shouldBreakLine = state.addRawNode(current);
+          if (shouldBreakLine && previous) {
+            if (isLiteralNode(previous)) {
+              previous.value = state.render();
+            } else {
+              tree.children.splice(i, 0, newTextNode("\n", previous.position));
+            }
+          }
+          break;
+
+        default: // Unhandled nodes
+          if (isParentNode(current)) {
+            console.debug(`Handling children of '${current.type}' node`);
+            processParent(current, parentTypes.concat(current.type));
+          } else {
+            console.debug(`Ignored '${current.type}' node`);
+          }
       }
 
-      console.debug(state.toString());
+      previous = current;
     }
   }
 
