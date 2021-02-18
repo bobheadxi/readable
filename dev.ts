@@ -6,8 +6,10 @@ interface DevScripts {
   [k: string]: (args: string[]) => Promise<void>;
 }
 
+const helpCommand = "help";
+
 const devScripts: DevScripts = {
-  "help": async () => {
+  [helpCommand]: async () => {
     console.log("READABLE DEV TOOL");
     console.log("=================");
     console.log(
@@ -17,6 +19,7 @@ const devScripts: DevScripts = {
     for (const command of Object.keys(devScripts)) {
       console.log(`  ./dev.ts ${command}`);
     }
+    console.log();
   },
   /**
    * Checks to run before commit.
@@ -101,13 +104,15 @@ const devScripts: DevScripts = {
 if (import.meta.main) {
   console.debug("Environment", Deno.version);
   console.debug("-------------------------");
-  const script = Deno.args[0] || "help";
-  const run = devScripts[script];
-  if (!run) {
-    console.error(`script '${script}' not found`);
+  const command = Deno.args[0] || helpCommand;
+  const scriptArgs = [...Deno.args].splice(1);
+  const runScript = devScripts[command];
+  if (!runScript) {
+    await devScripts[helpCommand](scriptArgs);
+    console.error(`Command '${command}' not found`);
     Deno.exit(1);
   }
-  await run([...Deno.args].splice(1));
+  await runScript(scriptArgs);
 }
 
 export default devScripts;
