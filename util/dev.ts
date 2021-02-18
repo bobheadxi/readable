@@ -57,6 +57,8 @@ const devScripts: DevScripts = {
         throw new Error(`fmt exited with status ${code} on file ${f.path}`);
       }
     }
+    // Dogfood readable formatting
+    await devScripts["readable"]([check ? "check" : "fmt", "**/*.md"]);
   },
   /**
    * Run tests.
