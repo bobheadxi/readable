@@ -36,18 +36,18 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
 \`and then some inline code\` in another sentence.
 `,
     },
-// See: https://github.com/bobheadxi/readable/issues/1
-//     {
-//       name: "short sentence followed by long sentence should be broken",
-//       input: `# Document
+    // See: https://github.com/bobheadxi/readable/issues/1
+    //     {
+    //       name: "short sentence followed by long sentence should be broken",
+    //       input: `# Document
 
-// here is another \`sentence\`! with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github.com/bobheadxi)** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).`,
-//       expect: `# Document
+    // here is another \`sentence\`! with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github.com/bobheadxi)** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).`,
+    //       expect: `# Document
 
-// here is another \`sentence\`!
-// with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github.com/bobheadxi)** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
-// `,
-//     },
+    // here is another \`sentence\`!
+    // with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github.com/bobheadxi)** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
+    // `,
+    //     },
   ]);
 }
 
