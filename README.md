@@ -2,7 +2,7 @@
 
 Opinionated Markdown formatter.
 
-## Ideas
+## Features
 
 - [Semantic line breaks](#semantic-line-breaks).
 - Simple, zero-config, standardized formatting for Markdown elements, generally provided by [`remark-stringify`](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify).
