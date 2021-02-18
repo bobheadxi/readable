@@ -8,9 +8,14 @@ interface DevScripts {
 
 const devScripts: DevScripts = {
   "help": async () => {
+    console.log("READABLE DEV TOOL");
+    console.log("=================");
+    console.log(
+      "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md\n",
+    );
     console.log(`Available commands:\n`);
     for (const command of Object.keys(devScripts)) {
-      console.log(`\t${command}`);
+      console.log(`  ./dev.ts ${command}`);
     }
   },
   /**
@@ -94,8 +99,9 @@ const devScripts: DevScripts = {
 };
 
 if (import.meta.main) {
-  console.debug("Deno", Deno.version);
-  const script = Deno.args[0];
+  console.debug("Environment", Deno.version);
+  console.debug("-------------------------");
+  const script = Deno.args[0] || "help";
   const run = devScripts[script];
   if (!run) {
     console.error(`script '${script}' not found`);
