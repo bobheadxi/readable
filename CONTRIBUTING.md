@@ -4,7 +4,7 @@
 
 Readable is built using [Deno](https://deno.land/) and TypeScript.
 
-A dev script (source in [`./util/dev.ts`](./util/dev.ts)) should be used instead of `deno ...` commands.
+A dev script (source in [`./dev-tool.ts`](./dev-tool.ts)) should be used instead of `deno ...` commands.
 
 ```sh
 ./dev readable --help

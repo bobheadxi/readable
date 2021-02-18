@@ -1,4 +1,4 @@
-import { expandGlob } from "../deps/fs.ts";
+import { expandGlob } from "./deps/fs.ts";
 
 interface DevScripts {
   [k: string]: (args: string[]) => Promise<void>;
