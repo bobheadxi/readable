@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: denolib/setup-deno@v2
         with:
-          deno-version: v1.x
+          deno-version: v1.7.2
       - run: ./dev fmt check
   test:
     name: test
@@ -19,5 +19,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: denolib/setup-deno@v2
         with:
-          deno-version: v1.x
+          deno-version: v1.7.2
       - run: ./dev test

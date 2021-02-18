@@ -99,6 +99,24 @@ const devScripts: DevScripts = {
       throw new Error(`readable exited with status ${code}`);
     }
   },
+  "upgrade": async (args) => {
+    if (args.length !== 3) {
+      throw new Error(`requires arguments [target] [previous] [next]`)
+    }
+    const [target, previous, next] = args
+    console.log(`Upgrading ${target} from ${previous} to ${next}`)
+    switch (target) {
+    case "deno":
+      const files = ["./.github/workflows/pipeline.yml", "./Dockerfile"];
+      for (const f of files) {
+        const content = await Deno.readTextFile(f)
+        await Deno.writeTextFile(f, content.replaceAll(previous, next))
+      }
+      break;
+    default:
+      throw new Error(`unknown target ${target}`)
+    }
+  }
 };
 
 if (import.meta.main) {
