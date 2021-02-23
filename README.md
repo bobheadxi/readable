@@ -8,10 +8,14 @@ Using [Deno](https://deno.land):
 
 ```sh
 deno install --unstable --allow-read --allow-write https://deno.land/x/readable/readable.ts
+readable -h
 ```
 
+Using [Docker](https://www.docker.com/):
+
 ```sh
-readable -h
+docker pull ghcr.io/bobheadxi/readable:latest
+docker run ghcr.io/bobheadxi/readable:latest
 ```
 
 ## Features
