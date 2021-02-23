@@ -8,9 +8,6 @@ import {
   ParentNode,
 } from "../../markdown/ast.ts";
 
-// Do a sentence wrap only after this column.
-const SENTENCE_MIN_MARGIN = 45;
-
 /**
  * End of sentence is marked by a period, exclamation point, question mark, colon, or semicolon.
  * Except for colon or semicolon, a final or preceding parenthesis or quote is allowed.
@@ -115,6 +112,11 @@ class ReflowParagraphState {
   private sentenceEnded: boolean = false;
 
   /**
+   * Do a sentence wrap only after this column.
+   */
+  private sentenceMinMargin = 45;
+
+  /**
    * Returns simple string representation of some parts of the state.
    */
   toString(): string {
@@ -149,7 +151,7 @@ class ReflowParagraphState {
   private shouldBreakLine(isPlain: boolean = true) {
     // Break whenever we see an end of sentence, given the sentence is not too short.
     const canSentenceBreak = this.sentenceEnded &&
-      this.currentColumn >= SENTENCE_MIN_MARGIN;
+      this.currentColumn >= this.sentenceMinMargin;
     // If a node isPlain (i.e. not inside a strong/emphasis/link) it's fine to break
     // immediately. If not (i.e. is strong/emphasis/link formatted), we can't break it on
     // the first character, so have to wait until next opportunity.
