@@ -1,4 +1,4 @@
-name: Publish (latest)
+name: publish (latest)
 
 on:
   push:
