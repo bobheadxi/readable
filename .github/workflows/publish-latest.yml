@@ -1,0 +1,18 @@
+name: Publish (latest)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  daemon:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: ./dev env
+    - run: ./dev build docker
+    - name: Publish to GitHub Container Registry
+      run: |
+        echo ${{ secrets.GH_PACKAGES_TOKEN }} | docker login ghcr.io --username $GITHUB_ACTOR --password-stdin
+        docker tag bobheadxi/readable:$(./dev env revision) ghcr.io/bobheadxi/readable:latest
+        docker push ghcr.io/bobheadxi/readable:latest
