@@ -159,7 +159,11 @@ const devScripts: DevScripts = {
     console.log(`Upgrading ${target} from ${previous} to ${next}`);
     switch (target) {
       case "deno":
-        const files = ["./.github/workflows/pipeline.yml", "./Dockerfile"];
+        const files = [
+          "./.github/workflows/pipeline.yml",
+          "./.github/workflows/publish-latest.yml",
+          "./Dockerfile",
+        ];
         for (const f of files) {
           const content = await Deno.readTextFile(f);
           await Deno.writeTextFile(f, content.replaceAll(previous, next));
