@@ -59,7 +59,7 @@ const devScripts: DevScripts = {
     for (const command of Object.keys(devScripts)) {
       console.log(`  ${command}`);
     }
-    console.log()
+    console.log();
     console.log(
       "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md",
     );
