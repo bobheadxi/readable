@@ -1,7 +1,52 @@
 import { expandGlob } from "./deps/fs.ts";
 
+interface DevEnv {
+  // readable metadata
+  revision: string;
+
+  // workspace information
+  commit: string;
+  tag?: string;
+  dirty: boolean;
+  deno: { deno: string; v8: string; typescript: string };
+
+  // make indexable
+  [k: string]: any;
+}
+
+async function getDevEnv(): Promise<DevEnv> {
+  const revparse = Deno.run({
+    cmd: ["git", "rev-parse", "--short", "HEAD"],
+    stdout: "piped",
+  });
+  const commit = new TextDecoder().decode(await revparse.output()).trim();
+  revparse.close();
+
+  const namerev = Deno.run({
+    cmd: ["git", "name-rev", "--tags", "--name-only", commit],
+    stdout: "piped",
+  });
+  const tag = new TextDecoder().decode(await namerev.output()).trim();
+  namerev.close();
+
+  const diff = Deno.run({ cmd: ["git", "diff", "--quiet"] });
+  const { code: diffStatus } = await diff.status();
+
+  const env = {
+    commit,
+    tag: tag !== "undefined" ? tag : undefined,
+    dirty: !!diffStatus,
+    deno: Deno.version,
+  };
+
+  return {
+    ...env,
+    revision: `${env.tag || env.commit}${env.dirty ? "-dirty" : ""}`,
+  };
+}
+
 interface DevScripts {
-  [k: string]: (args: string[]) => Promise<void>;
+  [k: string]: (args: string[], env: DevEnv) => Promise<void>;
 }
 
 const helpCommand = "help";
@@ -10,24 +55,31 @@ const devScripts: DevScripts = {
   [helpCommand]: async () => {
     console.log("READABLE DEV TOOL");
     console.log("=================");
-    console.log(
-      "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md\n",
-    );
     console.log(`Available commands:\n`);
     for (const command of Object.keys(devScripts)) {
       console.log(`  ${command}`);
     }
-    console.log();
+    console.log()
+    console.log(
+      "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md",
+    );
+  },
+  "env": async (args, env) => {
+    if (args.length === 0) {
+      console.log(env);
+    } else {
+      console.log(env[args[0]]);
+    }
   },
   /**
    * Checks to run before commit.
    * 
    * @param args directories
    */
-  "precommit": async (args) => {
+  "precommit": async (args, env) => {
     for (const command of ["fmt", "test"]) {
       console.log(`>>> ${command}`);
-      await devScripts[command](args);
+      await devScripts[command](args, env);
     }
   },
   /**
@@ -35,7 +87,7 @@ const devScripts: DevScripts = {
    * 
    * @param args 'check' as first to check, rest are directories
    */
-  "fmt": async (args) => {
+  "fmt": async (args, env) => {
     const check = args ? args[0] === "check" : false;
     const dir = check ? args[1] : args[0];
     const cmd = ["deno", "fmt"];
@@ -58,7 +110,7 @@ const devScripts: DevScripts = {
       }
     }
     // Dogfood readable formatting
-    await devScripts["readable"]([check ? "check" : "fmt", "**/*.md"]);
+    await devScripts["readable"]([check ? "check" : "fmt", "**/*.md"], env);
   },
   /**
    * Run tests.
@@ -117,20 +169,48 @@ const devScripts: DevScripts = {
         throw new Error(`unknown target ${target}`);
     }
   },
+  "build": async (args, env) => {
+    if (args.length !== 1) {
+      throw new Error(`requires argument [target]`);
+    }
+    const [target] = args;
+    console.log(`Building ${target} @ ${env.revision}`);
+    if (env.dirty) {
+      console.warn("Warning: building dirty commit");
+    }
+    switch (target) {
+      case "docker":
+        const p = Deno.run({
+          cmd: [
+            "docker",
+            "build",
+            "-t",
+            `bobheadxi/readable:${env.revision}`,
+            ".",
+          ],
+        });
+        const { code } = await p.status();
+        if (code) {
+          throw new Error(`command failed with status ${code}`);
+        }
+        break;
+      default:
+        throw new Error(`unknown target ${target}`);
+    }
+  },
 };
 
 if (import.meta.main) {
-  console.debug("Environment", Deno.version);
-  console.debug("-------------------------");
+  const env = await getDevEnv();
   const command = Deno.args[0] || helpCommand;
   const scriptArgs = [...Deno.args].splice(1);
   const runScript = devScripts[command];
   if (!runScript) {
-    await devScripts[helpCommand](scriptArgs);
+    await devScripts[helpCommand](scriptArgs, env);
     console.error(`Command '${command}' not found`);
     Deno.exit(1);
   }
-  await runScript(scriptArgs);
+  await runScript(scriptArgs, env);
 }
 
 export default devScripts;

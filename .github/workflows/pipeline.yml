@@ -3,21 +3,27 @@ name: pipeline
 on: [push]
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./dev env
+      - run: ./dev build docker
   fmt:
-    name: fmt
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: denolib/setup-deno@v2
         with:
           deno-version: v1.7.2
+      - run: ./dev env
       - run: ./dev fmt check
   test:
-    name: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: denolib/setup-deno@v2
         with:
           deno-version: v1.7.2
+      - run: ./dev env
       - run: ./dev test
