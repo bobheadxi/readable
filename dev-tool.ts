@@ -158,7 +158,7 @@ const devScripts: DevScripts = {
     const [target, previous, next] = args;
     console.log(`Upgrading ${target} from ${previous} to ${next}`);
     switch (target) {
-      case "deno":
+      case "deno": {
         const files = [
           "./.github/workflows/pipeline.yml",
           "./.github/workflows/publish-latest.yml",
@@ -169,6 +169,13 @@ const devScripts: DevScripts = {
           await Deno.writeTextFile(f, content.replaceAll(previous, next));
         }
         break;
+      }
+      case "deno-std": {
+        for await (const f of expandGlob("deps/**/*.ts")) {
+          const content = await Deno.readTextFile(f.path);
+          await Deno.writeTextFile(f.path, content.replaceAll(previous, next));
+        }
+      }
       default:
         throw new Error(`unknown target ${target}`);
     }
