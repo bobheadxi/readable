@@ -29,9 +29,7 @@ jobs:
         with:
           deno-version: v1.9.0
       - run: ./dev env
-      # Test coverage https://deno.land/manual@v1.9.0/testing#test-coverage
-      - run: ./dev test --coverage=cov_profile --unstable
-      - run: deno coverage cov_profile --lcov --unstable  > cov_profile.lcov
+      - run: ./dev test
       - uses: codecov/codecov-action@v1
         with:
           files: ./cov_profile.lcov
