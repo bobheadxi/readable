@@ -30,7 +30,9 @@ readable fmt **/*.md
 Readable's formatting performs:
 
 - [Semantic line breaks](#semantic-line-breaks).
+
 - Simple, zero-config, standardized formatting for Markdown elements, generally provided by [`remark-stringify`](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify).
+
 - Support for common extensions (Frontmatter, GitHub Markdown, Math).
 
 ### Semantic line breaks
@@ -40,17 +42,21 @@ Both these approaches have significant issues:
 
 - Line-breaking at some arbitrary character column looks nice when viewed, but is easily lost when making and suggesting edits, necessitating reflowing entire paragraphs.
   This leads to incomprehensible or uninformative diffs that are difficult to review.
+
 - Writing entire paragraphs is reasonable readable nowadays due to most editors and viewers performing wrapping out-of-the-box, but they make suggestions and diffs difficult to review due to every single change causing a diff on entire paragraph.
 
 Readable performs a variant of [semantic line breaks](https://sembr.org/) that attempts to strike a balance between:
 
 - Making use of how most Markdown specifications ignore single new lines to still provide a good **rendered Markdown** experience.
+
 - Leveraging modern line-wrapping in most viewers to maintain a good **raw Markdown** experience.
+
 - Maintaining understandable diffs in Markdown documentation for a good **reviewing** experience.
 
 In general, Readable's semantic line breaks:
 
 - Allow multiple short sentences to be part of a single line.
+
 - After a character threshold, breaks new sentences to a new line.
 
 This means that changes now reflect changes to *ideas* within semantic boundaries, and more accurately reflect the idea being changed.
@@ -71,7 +77,8 @@ If the text was broken at a character column, the diff might look like:
 + exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 ```
 
-This can be rather incomprehensible. If the text was not broken at all, the diff would look like:
+This can be rather incomprehensible.
+If the text was not broken at all, the diff would look like:
 
 ```diff
 - Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.

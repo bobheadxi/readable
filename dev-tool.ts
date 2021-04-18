@@ -119,17 +119,25 @@ const devScripts: DevScripts = {
    */
   "test": async (args) => {
     // Test coverage https://deno.land/manual/testing#test-coverage
-    const coverageDir = "cov_profile"
-    const test = Deno.run({ cmd: ["deno", "test", `--coverage=${coverageDir}`, "--unstable", ...args] });
+    const coverageDir = "cov_profile";
+    const test = Deno.run({
+      cmd: ["deno", "test", `--coverage=${coverageDir}`, "--unstable", ...args],
+    });
     const { code: testCode } = await test.status();
     if (testCode) {
       throw new Error(`test exited with status ${testCode}`);
     }
     const coverageSummary = `${coverageDir}.lcov`;
-    await Deno.remove(coverageSummary)
-    const renderCoverage = Deno.run({ cmd: ["bash", "-c", `deno coverage ${coverageDir} --lcov --unstable > ${coverageSummary}`]})
-    const { code: coverageCode } = await renderCoverage.status()
-    console.log(`coverage render exited with status ${coverageCode}`)
+    await Deno.remove(coverageSummary);
+    const renderCoverage = Deno.run({
+      cmd: [
+        "bash",
+        "-c",
+        `deno coverage ${coverageDir} --lcov --unstable > ${coverageSummary}`,
+      ],
+    });
+    const { code: coverageCode } = await renderCoverage.status();
+    console.log(`coverage render exited with status ${coverageCode}`);
   },
   /**
    * Run readable.

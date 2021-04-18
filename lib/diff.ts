@@ -18,8 +18,7 @@ export function diff(
   let diffString = "";
   parts.forEach((part) => {
     hasDiff = hasDiff || part.added || part.removed;
-    const jsonValue = JSON.stringify(part.value);
-    const escapedValue = jsonValue.substring(1, jsonValue.length - 1);
+    const escapedValue = escapeContent(part.value);
     diffString += part.added
       ? colors.bgGreen(escapedValue)
       : part.removed
@@ -30,4 +29,9 @@ export function diff(
     console.log(diffString);
   }
   return hasDiff;
+}
+
+export function escapeContent(content: string) {
+  const jsonValue = JSON.stringify(content);
+  return jsonValue.substring(1, jsonValue.length - 1);
 }

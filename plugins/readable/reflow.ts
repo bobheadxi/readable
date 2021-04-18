@@ -7,6 +7,7 @@ import {
   NodeType,
   ParentNode,
 } from "../../markdown/ast.ts";
+import { escapeContent } from "../../lib/diff.ts";
 
 /**
  * End of sentence is marked by a period, exclamation point, question mark, colon, or semicolon.
@@ -66,26 +67,26 @@ class ReflowParagraphState {
    * Add a node that should not be processed to the paragraph.
    * 
    * @param node markdown AST node
-   * @returns whether or not a line break should be created before adding this node
+   * @returns whether or not a line break should follow
    */
-  addRawNode(node: Node): boolean {
-    let brokeLine = false;
-    if (this.shouldBreakLine()) {
-      this.breakLine();
-      brokeLine = true;
+  addRawNode(node: Node) {
+    // Unbreakable nodes still count towards length of a line.
+    if (this.sentenceEnded) {
+      this.breakLine({ rawNode: true });
     }
-
-    this.currentColumn += nodeLength(node);
-    this.sentenceEnded = false;
-    this.breakAllowed = false;
-    return brokeLine;
+    this.currentLineColumn += nodeLength(node);
+    return this.sentenceEnded ? this.breakLine({ rawNode: true }) : false;
   }
 
   /**
    * Export the current lines.
    */
   render(): string {
-    return this.lines.map((line) => line.join(" ")).join("\n");
+    const rendered = this.lines.map((line) => line.join(" ")).join("\n");
+    console.debug(
+      `Rendered ${JSON.stringify(this.lines)} to '${escapeContent(rendered)}'`,
+    );
+    return rendered;
   }
 
   /**
@@ -94,9 +95,13 @@ class ReflowParagraphState {
   private lines: string[][] = [];
 
   /**
-   * Position of current column
+   * Previous line's column position
    */
-  private currentColumn: number = 0;
+  private previousLineColumn: number = 0;
+  /**
+   * Current line's column position
+   */
+  private currentLineColumn: number = 0;
   /**
    * Words that make up the current line
    */
@@ -117,60 +122,96 @@ class ReflowParagraphState {
   private sentenceMinMargin = 45;
 
   /**
-   * Returns simple string representation of some parts of the state.
+   * Returns simple representation of useful parts of the state.
    */
-  toString(): string {
-    return JSON.stringify({
+  getState() {
+    return {
       lineCount: this.lines.length,
-      currentColumn: this.currentColumn,
+      previousColumn: this.previousLineColumn,
+      currentColumn: this.currentLineColumn,
       breakAllowed: this.breakAllowed,
-      sentenceEnded: this.sentenceEnded,
-      currentLine: this.currentLine,
-    });
+      currentLine: JSON.stringify(this.currentLine),
+    };
   }
 
   /**
    * Add a word to the current line.
    * 
    * @param word individual word text
-   * @param isTreePlain 
+   * @param isTreePlain whether this text belongs inside another node
    */
   private appendWord(word: string, isTreePlain: boolean) {
-    if (this.shouldBreakLine(isTreePlain)) {
-      this.breakLine();
-    }
     this.currentLine.push(word);
-    this.currentColumn += word.length + 1;
-    this.sentenceEnded = isEndOfSentenceWord(word);
-  }
-
-  /**
-   * Whether or not a line break should be created, based on the state of the current
-   * accumulated sentence.
-   */
-  private shouldBreakLine(isPlain: boolean = true) {
-    // Break whenever we see an end of sentence, given the sentence is not too short.
-    const canSentenceBreak = this.sentenceEnded &&
-      this.currentColumn >= this.sentenceMinMargin;
-    // If a node isPlain (i.e. not inside a strong/emphasis/link) it's fine to break
-    // immediately. If not (i.e. is strong/emphasis/link formatted), we can't break it on
-    // the first character, so have to wait until next opportunity.
-    const canBreakLine = (isPlain || this.currentColumn > 0);
-    return this.breakAllowed && canSentenceBreak && canBreakLine;
+    this.currentLineColumn += word.length + 1;
+    if (isEndOfSentenceWord(word)) {
+      this.sentenceEnded = true;
+      this.breakLine({ isTreePlain });
+    } else if (this.sentenceEnded) {
+      // Adding a non-end-of-sentence after a sentence has ended
+      this.sentenceEnded = false;
+    }
   }
 
   /**
    * Adds a line break.
+   * 
+   * @param state information about the state
+   * @returns whether or not a line break was created before adding this node
    */
-  private breakLine() {
-    console.debug("Breaking line");
-    this.trimCurrentLine();
-    this.currentLine = [];
-    this.lines.push(this.currentLine); // ref to current line
+  private breakLine(
+    state?: { isTreePlain?: boolean; rawNode?: boolean },
+  ): boolean {
+    // If a node isPlain (i.e. not inside a strong/emphasis/link) it's fine to break
+    // immediately. If not (i.e. is strong/emphasis/link formatted), we can't break it on
+    // the first character, so have to wait until next opportunity.
+    const canBreakLine = (state?.isTreePlain || this.currentLineColumn > 0);
 
-    this.currentColumn = 0;
-    this.sentenceEnded = false;
-    this.breakAllowed = false; // do not break twice in a row
+    // Decide a line break strategy if allowed.
+    if (this.breakAllowed && canBreakLine) {
+      // Prepare current line.
+      this.trimCurrentLine();
+
+      // Check if this sentence can be merged into the previous sentence instead, if a
+      // previous sentence has been tracked already.
+      const mergedLength = this.previousLineColumn + this.currentLineColumn;
+      const shouldMerge = this.lines.length >= 2 &&
+        mergedLength < this.sentenceMinMargin;
+      if (shouldMerge) {
+        const current = this.lines.pop();
+        const previous = this.lines.pop();
+        if (current && previous) {
+          console.debug("Breaking line by merging", {
+            current,
+            previous,
+            state,
+          });
+          this.lines.push([...previous, ...current]);
+          this.previousLineColumn = mergedLength;
+        } else {
+          throw new Error(
+            "Unexpected absence of current and/or previous when merging lines",
+          );
+        }
+      } else {
+        console.debug("Breaking line by starting anew", { state });
+        this.previousLineColumn = this.currentLineColumn;
+      }
+
+      // Start collecting a new line, now that the current line has been handled.
+      // If this is a raw node, the current line hasn't actually been handled, so we don't
+      // reset the line yet.
+      if (!state?.rawNode) {
+        this.currentLine = [];
+        this.currentLineColumn = this.currentLine.length;
+        this.lines.push(this.currentLine); // ref to the new, blank line
+      }
+      this.breakAllowed = false; // do not break twice in a row
+
+      // Indicate a line was broken
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -205,37 +246,42 @@ function reflowParagraph(paragraph: ParentNode) {
       const current = tree.children[i];
 
       switch (current.type) {
-        case NodeType.Text: // Normal text
+        // Normal text
+        case NodeType.Text:
           // Ignore nodes that don't have a value for us to manipulate
           if (!isLiteralNode(current)) {
             continue;
           }
-          console.debug("Adding text node", state.toString());
           state.addText(current.value, isTreePlain);
           current.value = state.render();
+          console.debug("Added text node", state.getState());
           break;
 
         // Unbreakable nodes
 
         case NodeType.Link:
         case NodeType.InlineCode:
-          console.debug(
-            `Adding unbreakable '${current.type}' node`,
-            state.toString(),
-          );
           // Since we aren't just breaking the value of a text node, we need to make
           // adjustments to the previous node or the tree.
           const shouldBreakLine = state.addRawNode(current);
           if (shouldBreakLine && previous) {
             if (isLiteralNode(previous)) {
-              previous.value = state.render();
+              // Preserve spacing
+              previous.value = state.render() + " ";
             } else {
               tree.children.splice(i, 0, newTextNode("\n", previous.position));
             }
           }
+          console.debug(
+            `Added unbreakable '${current.type}' node`,
+            state.getState(),
+          );
           break;
 
-        default: // Unhandled nodes
+        // Unhandled nodes
+
+        default:
+          // Try to process
           if (isParentNode(current)) {
             console.debug(`Handling children of '${current.type}' node`);
             processParent(current, parentTypes.concat(current.type));

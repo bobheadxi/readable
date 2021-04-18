@@ -21,31 +21,41 @@ import { lorenIpsumLines, lorenIpsumText, TestSuite } from "../../lib/test.ts";
       expect: lorenIpsumLines().join("\n") + "\n",
     },
     {
-      case: "break sentences that start with an unbreakable node",
+      case: "break sentences that start or end with an unbreakable node",
       input: `${
         lorenIpsumLines()[0]
       } [now here is a link](https://bobheadxi.dev) in a rather long sentence, ${
         lorenIpsumLines()[1]
-      } \`and then some inline code\` in another sentence.`,
+      } \`And then some inline code\` in another sentence.`,
       expect: `${lorenIpsumLines()[0]}
 [now here is a link](https://bobheadxi.dev) in a rather long sentence, ${
         lorenIpsumLines()[1]
       }
-\`and then some inline code\` in another sentence.
+\`And then some inline code\` in another sentence.
 `,
     },
-    // See: https://github.com/bobheadxi/readable/issues/1
-    //     {
-    //       case: "short sentence followed by long sentence should be broken",
-    //       input: `# Document
+    {
+      case: "short sentence followed by long sentence should be broken",
+      input: `# Document
 
-    // here is another \`sentence\`! with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github.com/bobheadxi)** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).`,
-    //       expect: `# Document
+A short \`sentence\`! This next sentence is long, with [a link](https://bobheadxi.dev) and **emphasis** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).`,
+      expect: `# Document
 
-    // here is another \`sentence\`!
-    // with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github.com/bobheadxi)** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
-    // `,
-    //     },
+A short \`sentence\`!
+This next sentence is long, with [a link](https://bobheadxi.dev) and **emphasis** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
+`,
+    },
+    {
+      case: "short sentence followed by short sentence should be merged",
+      input: `# Document
+
+A short \`sentence\`!
+And another one.`,
+      expect: `# Document
+
+A short \`sentence\`! And another one.
+`,
+    },
   ]);
 }
 
