@@ -190,6 +190,7 @@ const devScripts: DevScripts = {
           const content = await Deno.readTextFile(f.path);
           await Deno.writeTextFile(f.path, content.replaceAll(previous, next));
         }
+        break;
       }
       default:
         throw new Error(`unknown target ${target}`);
