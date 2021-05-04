@@ -1,4 +1,4 @@
-import { expandGlob } from "./deps/fs.ts";
+import { exists, expandGlob } from "./deps/fs.ts";
 
 interface DevEnv {
   // readable metadata
@@ -128,7 +128,9 @@ const devScripts: DevScripts = {
       throw new Error(`test exited with status ${testCode}`);
     }
     const coverageSummary = `${coverageDir}.lcov`;
-    await Deno.remove(coverageSummary);
+    if (await exists(coverageSummary)) {
+      await Deno.remove(coverageSummary);
+    }
     const renderCoverage = Deno.run({
       cmd: [
         "bash",
