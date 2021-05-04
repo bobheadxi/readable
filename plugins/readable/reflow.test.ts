@@ -56,6 +56,29 @@ And another one.`,
 A short \`sentence\`! And another one.
 `,
     },
+    {
+      case: "short sentence followed by long sentence should be broken",
+      input: `# Document
+
+A short \`sentence\`! This next sentence is long, with [a link](https://bobheadxi.dev) and **emphasis** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).`,
+      expect: `# Document
+
+A short \`sentence\`!
+This next sentence is long, with [a link](https://bobheadxi.dev) and **emphasis** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
+`,
+    },
+    {
+      case: "handle trailing punctuation after unbreakable",
+      input:
+        `This is a sentence with a trailing period [after an unbreakable node]().
+
+The next sentence is here.`,
+      expect:
+        `This is a sentence with a trailing period [after an unbreakable node]().
+
+The next sentence is here.
+`,
+    },
   ]);
 }
 

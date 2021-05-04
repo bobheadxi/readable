@@ -3,7 +3,11 @@ import { diff } from "../lib/diff.ts";
 
 import format from "./format.ts";
 
-// run a simple format with default remark to ensure everything works
+/**
+ * Run a simple format with default remark to ensure everything works in the general case.
+ * 
+ * If this test fails, use the result to derive a more specific test in the appropriate plugin.
+ */
 const testSuite = "markdown/format";
 const input = `---
 field: wow
@@ -26,10 +30,6 @@ $$
 L = \frac{1}{2} \rho v^2 S C_L
 $$
 `;
-
-/**
- * TODO: this currently fails with redundant newlines between nodes. Not sure why yet.
- */
 const want = `---
 field: wow
 ---

@@ -81,8 +81,22 @@ class ReflowParagraphState {
   /**
    * Export the current lines.
    */
-  render(): string {
-    const rendered = this.lines.map((line) => line.join(" ")).join("\n");
+  render(opts?: { isLastChild?: boolean; isUnbreakable?: boolean }): string {
+    // If this is the last child, drop trailing empty line before rendering.
+    if (
+      opts?.isLastChild && this.lines.length > 1 &&
+      this.currentLine.length === 0
+    ) {
+      this.lines.pop();
+    }
+
+    let rendered = this.lines.map((line) => line.join(" ")).join("\n");
+
+    // Preserve spacing if this is an unbreakable node.
+    if (opts?.isUnbreakable) {
+      rendered += " ";
+    }
+
     console.debug(
       `Rendered ${JSON.stringify(this.lines)} to '${escapeContent(rendered)}'`,
     );
@@ -243,6 +257,7 @@ function reflowParagraph(paragraph: ParentNode) {
 
     // Process all text in this tree
     for (let i = 0; i < tree.children.length; ++i) {
+      const isLastChild = i === (tree.children.length - 1);
       const current = tree.children[i];
 
       switch (current.type) {
@@ -253,7 +268,7 @@ function reflowParagraph(paragraph: ParentNode) {
             continue;
           }
           state.addText(current.value, isTreePlain);
-          current.value = state.render();
+          current.value = state.render({ isLastChild });
           console.debug("Added text node", state.getState());
           break;
 
@@ -266,8 +281,10 @@ function reflowParagraph(paragraph: ParentNode) {
           const shouldBreakLine = state.addRawNode(current);
           if (shouldBreakLine && previous) {
             if (isLiteralNode(previous)) {
-              // Preserve spacing
-              previous.value = state.render() + " ";
+              previous.value = state.render({
+                isLastChild,
+                isUnbreakable: true,
+              });
             } else {
               tree.children.splice(i, 0, newTextNode("\n", previous.position));
             }
