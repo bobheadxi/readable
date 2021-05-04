@@ -1,4 +1,4 @@
-# Readable ![pipeline](https://github.com/bobheadxi/readable/workflows/pipeline/badge.svg)
+# Readable ![pipeline](https://github.com/bobheadxi/readable/workflows/pipeline/badge.svg) [![codecov](https://codecov.io/gh/bobheadxi/readable/branch/main/graph/badge.svg?token=NwwQxKVsbt)](https://codecov.io/gh/bobheadxi/readable)
 
 Opinionated Markdown formatter.
 
