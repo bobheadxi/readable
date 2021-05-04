@@ -15,7 +15,7 @@ Using [Docker](https://www.docker.com/):
 
 ```sh
 docker pull ghcr.io/bobheadxi/readable:latest
-docker run ghcr.io/bobheadxi/readable:latest
+docker run -v $(pwd):/data ghcr.io/bobheadxi/readable:latest
 ```
 
 ## Features
@@ -42,21 +42,17 @@ Both these approaches have significant issues:
 
 - Line-breaking at some arbitrary character column looks nice when viewed, but is easily lost when making and suggesting edits, necessitating reflowing entire paragraphs.
   This leads to incomprehensible or uninformative diffs that are difficult to review.
-
 - Writing entire paragraphs is reasonable readable nowadays due to most editors and viewers performing wrapping out-of-the-box, but they make suggestions and diffs difficult to review due to every single change causing a diff on entire paragraph.
 
 Readable performs a variant of [semantic line breaks](https://sembr.org/) that attempts to strike a balance between:
 
 - Making use of how most Markdown specifications ignore single new lines to still provide a good **rendered Markdown** experience.
-
 - Leveraging modern line-wrapping in most viewers to maintain a good **raw Markdown** experience.
-
 - Maintaining understandable diffs in Markdown documentation for a good **reviewing** experience.
 
 In general, Readable's semantic line breaks:
 
 - Allow multiple short sentences to be part of a single line.
-
 - After a character threshold, breaks new sentences to a new line.
 
 This means that changes now reflect changes to *ideas* within semantic boundaries, and more accurately reflect the idea being changed.
