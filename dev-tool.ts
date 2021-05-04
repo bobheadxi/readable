@@ -179,6 +179,7 @@ const devScripts: DevScripts = {
         const files = [
           "./.github/workflows/pipeline.yml",
           "./.github/workflows/publish-latest.yml",
+          "./.github/workflows/publish-release.yml",
           "./Dockerfile",
         ];
         for (const f of files) {

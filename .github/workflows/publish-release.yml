@@ -1,0 +1,21 @@
+name: Publish (release)
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: denolib/setup-deno@v2
+      with:
+        deno-version: v1.9.2
+    - run: ./dev env
+    - run: ./dev build docker
+    - name: Publish to GitHub Container Registry
+      run: |
+        echo ${{ secrets.GH_PACKAGES_TOKEN }} | docker login ghcr.io --username $GITHUB_ACTOR --password-stdin
+        docker tag bobheadxi/readable:$(./dev env revision) ghcr.io/bobheadxi/readable:$(git describe --tags)
+        docker push ghcr.io/bobheadxi/readable:$(git describe --tags)
