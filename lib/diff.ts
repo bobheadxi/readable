@@ -3,7 +3,7 @@ import { diffText } from "../deps/diff.ts";
 
 /**
  * Prints coloured diff to console. Returns true if a diff is found.
- * 
+ *
  * @param expected expected string
  * @param got got string
  * @param options configure behaviour of diff

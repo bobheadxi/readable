@@ -1,6 +1,6 @@
 /**
  * @module test.ts
- * 
+ *
  * Testing utilities.
  */
 
@@ -44,7 +44,7 @@ export interface TestCase<InputT, OutputT> extends DenoTestArgs {
 export class TestSuite<InputT, OutputT> {
   /**
    * Create a test suite.
-   * 
+   *
  * @param name name of the test suite, prepended to each test case
  * @param test function to execute on each test case, expected to call an `assert` or `fail` from the `asserts.ts` module.
  * @param cases test cases

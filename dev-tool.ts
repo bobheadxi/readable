@@ -73,7 +73,7 @@ const devScripts: DevScripts = {
   },
   /**
    * Checks to run before commit.
-   * 
+   *
    * @param args directories
    */
   "precommit": async (args, env) => {
@@ -84,7 +84,7 @@ const devScripts: DevScripts = {
   },
   /**
    * Run formatter.
-   * 
+   *
    * @param args 'check' as first to check, rest are directories
    */
   "fmt": async (args, env) => {
@@ -114,7 +114,7 @@ const devScripts: DevScripts = {
   },
   /**
    * Run tests with coverage.
-   * 
+   *
    * @param args directories
    */
   "test": async (args) => {
@@ -143,7 +143,7 @@ const devScripts: DevScripts = {
   },
   /**
    * Run readable.
-   * 
+   *
    * @param args 'install' as first to install, otherwise 'readable' arguments
    */
   "readable": async (args) => {

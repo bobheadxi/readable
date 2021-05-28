@@ -47,7 +47,7 @@ function splitWords(text: string): string[] {
 class ReflowParagraphState {
   /**
    * Add text to the paragraph.
-   * 
+   *
    * @param text value of text node
    * @param plainTree whether or not the text is inside another node
    */
@@ -65,7 +65,7 @@ class ReflowParagraphState {
 
   /**
    * Add a node that should not be processed to the paragraph.
-   * 
+   *
    * @param node markdown AST node
    * @returns whether or not a line break should follow
    */
@@ -150,7 +150,7 @@ class ReflowParagraphState {
 
   /**
    * Add a word to the current line.
-   * 
+   *
    * @param word individual word text
    * @param isTreePlain whether this text belongs inside another node
    */
@@ -168,7 +168,7 @@ class ReflowParagraphState {
 
   /**
    * Adds a line break.
-   * 
+   *
    * @param state information about the state
    * @returns whether or not a line break was created before adding this node
    */
@@ -242,8 +242,8 @@ class ReflowParagraphState {
 
 /**
  * Reflow the top-level node containing a paragraph.
- * 
- * @param paragraph 
+ *
+ * @param paragraph
  */
 function reflowParagraph(paragraph: ParentNode) {
   const state = new ReflowParagraphState();

@@ -35,7 +35,7 @@ cli.help();
 
 /**
  * Run input commands if run as a script.
- * 
+ *
  * See https://deno.land/manual@master/tools/script_installer
  */
 if (import.meta.main) {

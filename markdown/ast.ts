@@ -43,7 +43,7 @@ function positionAfter(p: Position, length: number): Position {
 
 /**
  * Node types - see https://github.com/syntax-tree/mdast#nodes
- * 
+ *
  * Can be extended by remark plugins - see https://github.com/syntax-tree/mdast#extensions
  */
 export enum NodeType {
