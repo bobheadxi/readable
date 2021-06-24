@@ -2,5 +2,8 @@
     "deno.enable": true,
     "coverage-gutters.coverageFileNames": [
         "cov_profile.lcov"
-    ]
+    ],
+    "deno.suggest.imports.hosts": {
+        "https://cdn.skypack.dev": false
+    }
 }
