@@ -4,6 +4,7 @@
 // For specific configuration options, see
 // https://github.com/syntax-tree/mdast-util-to-markdown#formatting-options
 export default {
+  repository: false,
   settings: {
     // bullets
     bullet: "-",

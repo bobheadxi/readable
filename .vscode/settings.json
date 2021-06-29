@@ -4,6 +4,11 @@
         "cov_profile.lcov"
     ],
     "deno.suggest.imports.hosts": {
-        "https://cdn.skypack.dev": false
+        "https://cdn.skypack.dev": false,
+        "https://j": false,
+        "https://js": false,
+        "https://jspm.": false,
+        "https://jspm.d": false,
+        "https://jspm.dev": false
     }
 }

@@ -19,7 +19,7 @@ hello world! this is a document.
 with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github.com/bobheadxi)** and *italics* and ~strike~
 and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
 
-and this is another paragraph!
+and this is another [paragraph](#oh-no)!
 
 ## Math
 
@@ -52,8 +52,14 @@ $$
 
 Deno.test({
   name: testSuite,
+  only: true,
   fn: () => {
-    const got = format(input);
+    let got = "";
+    try {
+      got = format(input);
+    } catch (err) {
+      fail(`Unexpected error: ${err}`);
+    }
     if (diff(want, got)) {
       fail("Unexpected diff");
     }

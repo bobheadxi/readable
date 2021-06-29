@@ -1,4 +1,5 @@
 import remark, { Remark } from "../deps/remark.ts";
+import { VFile } from "../deps/vfile.ts";
 
 import plugins from "../plugins/mod.ts";
 
@@ -9,10 +10,10 @@ for (const p of plugins) {
 
 // formatting configuration
 export default function format(
-  markdown: string,
+  markdown: string | VFile,
   configuredRemark: Remark = defaultRemark,
 ): string {
-  let formatted = markdown;
+  let formatted = String(markdown);
   configuredRemark.process(markdown, (err, file) => {
     if (err) throw err;
     formatted = String(file);

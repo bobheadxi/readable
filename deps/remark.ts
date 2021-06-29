@@ -1,17 +1,10 @@
 import remarkImport from "https://jspm.dev/remark@13.0.0";
-
-export type VFile = {
-  data: any;
-  messages: any[];
-  history: any[];
-  cwd: string;
-  contents: string;
-};
+import { VFile } from "./vfile.ts";
 
 // See https://github.com/remarkjs/remark/tree/main/packages/remark#use
 export interface Remark {
   process: (
-    content: string,
+    content: string | VFile,
     processor: (err: any, file: VFile) => void,
   ) => string;
   use: (plugin: any) => Remark;
