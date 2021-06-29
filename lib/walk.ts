@@ -1,4 +1,5 @@
 import { expandGlob } from "../deps/fs.ts";
+import { VFile } from "../deps/vfile.ts";
 
 interface FileContents {
   original: string;
@@ -8,7 +9,7 @@ interface FileContents {
 
 export async function walkGlobs(
   globs: string[],
-  render: (contents: string) => string,
+  render: (contents: VFile) => string,
 ): Promise<Map<string, FileContents>> {
   const results = new Map<string, FileContents>();
   if (globs.length == 0) globs.push("**/*.md");
@@ -21,7 +22,13 @@ export async function walkGlobs(
         const contentsStr = contents.toString();
         results.set(file.path.replace(Deno.cwd(), ""), {
           original: contentsStr,
-          rendered: render(contentsStr),
+          rendered: render(
+            new VFile({
+              path: file.path,
+              value: contentsStr,
+              repository: false,
+            }),
+          ),
           fullPath: file.path,
         });
       } catch (err) {

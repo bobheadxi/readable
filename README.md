@@ -20,7 +20,7 @@ docker run -v $(pwd):/data ghcr.io/bobheadxi/readable
 
 ## Features
 
-Readable supports basic formatting and validation of formatting with `readable fmt` and `readable check`.
+Readable [supports](#oh-no) basic formatting and validation of formatting with `readable fmt` and `readable check`.
 For example:
 
 ```sh

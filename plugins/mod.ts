@@ -8,6 +8,7 @@ export default [
   thirdparty.gfm,
   thirdparty.frontmatter,
   thirdparty.math,
+  thirdparty.validateLinks,
   readable.reflow,
   thirdparty.stringify,
 ];
