@@ -61,7 +61,7 @@ const devScripts: DevScripts = {
     }
     console.log();
     console.log(
-      "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md"
+      "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md",
     );
   },
   env: async (args, env) => {
@@ -240,7 +240,7 @@ const devScripts: DevScripts = {
 
 export const READABLE_VERSION = "${version}";
 export const READABLE_COMMIT = "${env.commit}";
-`
+`,
     );
 
     const commit = Deno.run({
