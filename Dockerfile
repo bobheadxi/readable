@@ -1,4 +1,4 @@
-FROM hayd/alpine-deno:1.13.2
+FROM denoland/deno:1.13.2
 USER deno
 
 WORKDIR /bin
