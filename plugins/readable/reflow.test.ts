@@ -1,4 +1,5 @@
 import { fail } from "testing/asserts.ts";
+import { getLogger } from "log/mod.ts";
 
 import format from "../../markdown/format.ts";
 import remark from "../../lib/remark.ts";
@@ -14,7 +15,7 @@ import { lorenIpsumLines, lorenIpsumText, TestSuite } from "../../lib/test.ts";
     "plugins/readable/reflow:e2e",
     (testCase) => {
       const got = format(testCase.input, testRemark);
-      if (diff(testCase.expect, got)) {
+      if (diff(testCase.expect, got, { log: getLogger() })) {
         fail("Unexpected diff");
       }
     },
@@ -91,7 +92,7 @@ The next sentence is here.
           `Upload the repository to a specific "sourcegraph-$ LANGUAGE" organization (where $LANGUAGE is the primary language of the repository as identified by github.com) (e.x. the ["sourcegraph-go" organization](https://ghe.sgdev.org/sourcegraph-go) for <https://ghe.sgdev.org/sourcegraph-go/gorilla-mux>)`,
         expect:
           `Upload the repository to a specific "sourcegraph-$ LANGUAGE" organization (where $LANGUAGE is the primary language of the repository as identified by github.com) (e.x. the ["sourcegraph-go" organization](https://ghe.sgdev.org/sourcegraph-go) for <https://ghe.sgdev.org/sourcegraph-go/gorilla-mux>)
-  `,
+`,
       },
     ],
   );
