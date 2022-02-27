@@ -214,7 +214,7 @@ class ReflowParagraphState {
           );
         }
       } else {
-        this.log.debug("Breaking line by starting anew", { state });
+        this.log.info("Breaking line by starting anew", { state });
         this.previousLineColumn = this.currentLineColumn;
       }
 
@@ -322,8 +322,7 @@ function reflowParagraph(log: Logger, paragraph: ParentNode) {
 }
 
 export default function reflow() {
-  // TODO inject maybe?
-  const log = getLogger();
+  const log = getLogger("reflow");
 
   // Traverse tree looking for the right group of nodes to process
   function visit(node: Node) {
