@@ -1,4 +1,4 @@
-import { Logger, getLogger } from "log/mod.ts";
+import { getLogger, Logger } from "log/mod.ts";
 
 import {
   isLiteralNode,
