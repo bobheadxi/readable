@@ -1,4 +1,4 @@
-import { exists, expandGlob } from "./deps/fs.ts";
+import { exists, expandGlob } from "fs/mod.ts";
 
 interface DevEnv {
   // readable metadata
@@ -45,6 +45,8 @@ async function getDevEnv(): Promise<DevEnv> {
   };
 }
 
+const denoImportMapFlag = "--import-map=./import-map.json";
+
 interface DevScripts {
   [k: string]: (args: string[], env: DevEnv) => Promise<void>;
 }
@@ -64,7 +66,7 @@ const devScripts: DevScripts = {
       "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md",
     );
   },
-  "env": async (args, env) => {
+  env: async (args, env) => {
     if (args.length === 0) {
       console.log(env);
     } else {
@@ -73,10 +75,10 @@ const devScripts: DevScripts = {
   },
   /**
    * Checks to run before commit.
-   * 
+   *
    * @param args directories
    */
-  "precommit": async (args, env) => {
+  precommit: async (args, env) => {
     for (const command of ["fmt", "test"]) {
       console.log(`>>> ${command}`);
       await devScripts[command](args, env);
@@ -84,22 +86,26 @@ const devScripts: DevScripts = {
   },
   /**
    * Run formatter.
-   * 
+   *
    * @param args 'check' as first to check, rest are directories
    */
-  "fmt": async (args, env) => {
+  fmt: async (args, env) => {
     const check = args ? args[0] === "check" : false;
-    const dir = check ? args[1] : args[0];
+    const watch = args ? args[0] === "watch" : false;
+    const dir = check || watch ? args[1] : args[0];
     const cmd = ["deno", "fmt"];
     if (check) {
       cmd.push("--check");
     } else {
       cmd.push("--quiet");
     }
+    if (watch) {
+      cmd.push("--watch");
+    }
     // 'deno fmt' does not have glob support yet: https://github.com/denoland/deno/issues/6365
     // so we implement our own. this is required because 'deno fmt' now formats markdown,
     // which I don't want.
-    const globPattern = `${dir ? `${dir}/` : ""}**/*.ts`;
+    const globPattern = `${dir ? `${dir}/` : ""}**/**.ts`;
     console.log(`${check ? "Checking" : "Formatting"} '${globPattern}'`);
     for await (const f of expandGlob(globPattern)) {
       if (!f.name.endsWith(".ts")) continue;
@@ -114,14 +120,23 @@ const devScripts: DevScripts = {
   },
   /**
    * Run tests with coverage.
-   * 
+   *
    * @param args directories
    */
-  "test": async (args) => {
+  test: async (args) => {
     // Test coverage https://deno.land/manual/testing#test-coverage
     const coverageDir = "cov_profile";
+    if (await exists(coverageDir)) {
+      await Deno.remove(coverageDir, { recursive: true });
+    }
     const test = Deno.run({
-      cmd: ["deno", "test", `--coverage=${coverageDir}`, "--unstable", ...args],
+      cmd: [
+        "deno",
+        "test",
+        denoImportMapFlag,
+        `--coverage=${coverageDir}`,
+        ...args,
+      ],
     });
     const { code: testCode } = await test.status();
     if (testCode) {
@@ -133,9 +148,11 @@ const devScripts: DevScripts = {
     }
     const renderCoverage = Deno.run({
       cmd: [
-        "bash",
-        "-c",
-        `deno coverage ${coverageDir} --lcov --unstable > ${coverageSummary}`,
+        "deno",
+        "coverage",
+        coverageDir,
+        "--lcov",
+        `--output=${coverageSummary}`,
       ],
     });
     const { code: coverageCode } = await renderCoverage.status();
@@ -143,10 +160,10 @@ const devScripts: DevScripts = {
   },
   /**
    * Run readable.
-   * 
+   *
    * @param args 'install' as first to install, otherwise 'readable' arguments
    */
-  "readable": async (args) => {
+  readable: async (args) => {
     const install = args ? args[0] === "install" : false;
     const target = ["./readable.ts"];
     if (!install) {
@@ -155,7 +172,7 @@ const devScripts: DevScripts = {
     const cmd = [
       "deno",
       install ? "install" : "run",
-      "--unstable",
+      denoImportMapFlag,
       "--allow-read",
       "--allow-write",
     ];
@@ -165,10 +182,11 @@ const devScripts: DevScripts = {
     const p = Deno.run({ cmd: [...cmd, ...target] });
     const { code } = await p.status();
     if (code) {
-      throw new Error(`readable exited with status ${code}`);
+      console.error(`readable exited with status ${code}`);
+      Deno.exit(code);
     }
   },
-  "upgrade": async (args) => {
+  upgrade: async (args) => {
     if (args.length !== 3) {
       throw new Error(`requires arguments [target] [previous] [next]`);
     }
@@ -189,17 +207,18 @@ const devScripts: DevScripts = {
         break;
       }
       case "deno-std": {
-        for await (const f of expandGlob("deps/**/*.ts")) {
-          const content = await Deno.readTextFile(f.path);
-          await Deno.writeTextFile(f.path, content.replaceAll(previous, next));
-        }
+        const content = await Deno.readTextFile("import-map.json");
+        await Deno.writeTextFile(
+          "import-map.json",
+          content.replaceAll(previous, next),
+        );
         break;
       }
       default:
         throw new Error(`unknown target ${target}`);
     }
   },
-  "build": async (args, env) => {
+  build: async (args, env) => {
     if (args.length !== 1) {
       throw new Error(`requires argument [target]`);
     }
@@ -228,7 +247,7 @@ const devScripts: DevScripts = {
         throw new Error(`unknown target ${target}`);
     }
   },
-  "release": async (args, env) => {
+  release: async (args, env) => {
     const version = args[0];
     if (!version) {
       throw new Error(`version required`);
@@ -236,7 +255,7 @@ const devScripts: DevScripts = {
 
     await Deno.writeTextFile(
       "./version.ts",
-      `// Generated by dev-tool.ts
+      `// Generated by './dev release ${version}'
 
 export const READABLE_VERSION = "${version}";
 export const READABLE_COMMIT = "${env.commit}";

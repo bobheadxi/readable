@@ -1,11 +1,11 @@
-import { fail } from "../deps/asserts.ts";
+import { fail } from "testing/asserts.ts";
 import { diff } from "../lib/diff.ts";
 
 import format from "./format.ts";
 
 /**
  * Run a simple format with default remark to ensure everything works in the general case.
- * 
+ *
  * If this test fails, use the result to derive a more specific test in the appropriate plugin.
  */
 const testSuite = "markdown/format";

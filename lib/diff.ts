@@ -1,9 +1,23 @@
-import colors from "../deps/colors.ts";
-import { diffText } from "../deps/diff.ts";
+import { bgGreen, bgRed, gray } from "fmt/colors.ts";
+import { Logger } from "log/mod.ts";
+import { diffWordsWithSpace } from "diff";
+
+export const diffText = diffWordsWithSpace as (
+  oldStr: string,
+  newStr: string,
+) => Parts;
+
+interface Part {
+  value: string;
+  added: boolean;
+  removed: boolean;
+}
+
+type Parts = Part[];
 
 /**
  * Prints coloured diff to console. Returns true if a diff is found.
- * 
+ *
  * @param expected expected string
  * @param got got string
  * @param options configure behaviour of diff
@@ -11,7 +25,7 @@ import { diffText } from "../deps/diff.ts";
 export function diff(
   expected: string,
   got: string,
-  options: { print: boolean } = { print: true },
+  options: { log: Logger | undefined } = { log: undefined },
 ): boolean {
   const parts = diffText(expected, got);
   let hasDiff = false;
@@ -20,13 +34,13 @@ export function diff(
     hasDiff = hasDiff || part.added || part.removed;
     const escapedValue = escapeContent(part.value);
     diffString += part.added
-      ? colors.bgGreen(escapedValue)
+      ? bgGreen(escapedValue)
       : part.removed
-      ? colors.bgRed(escapedValue)
-      : colors.gray(part.value);
+      ? bgRed(escapedValue)
+      : gray(part.value);
   });
-  if (hasDiff && options?.print) {
-    console.log(diffString);
+  if (hasDiff && options?.log) {
+    options.log.info(diffString);
   }
   return hasDiff;
 }

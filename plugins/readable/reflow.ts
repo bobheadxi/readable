@@ -1,3 +1,5 @@
+import { getLogger, Logger } from "log/mod.ts";
+
 import {
   isLiteralNode,
   isParentNode,
@@ -45,9 +47,14 @@ function splitWords(text: string): string[] {
  * ReflowParagraphState tracks the state of a paragraph being reflowed.
  */
 class ReflowParagraphState {
+  log: Logger;
+  constructor(log: Logger) {
+    this.log = log;
+  }
+
   /**
    * Add text to the paragraph.
-   * 
+   *
    * @param text value of text node
    * @param plainTree whether or not the text is inside another node
    */
@@ -65,7 +72,7 @@ class ReflowParagraphState {
 
   /**
    * Add a node that should not be processed to the paragraph.
-   * 
+   *
    * @param node markdown AST node
    * @returns whether or not a line break should follow
    */
@@ -97,7 +104,7 @@ class ReflowParagraphState {
       rendered += " ";
     }
 
-    console.debug(
+    this.log.debug(
       `Rendered ${JSON.stringify(this.lines)} to '${escapeContent(rendered)}'`,
     );
     return rendered;
@@ -150,7 +157,7 @@ class ReflowParagraphState {
 
   /**
    * Add a word to the current line.
-   * 
+   *
    * @param word individual word text
    * @param isTreePlain whether this text belongs inside another node
    */
@@ -168,7 +175,7 @@ class ReflowParagraphState {
 
   /**
    * Adds a line break.
-   * 
+   *
    * @param state information about the state
    * @returns whether or not a line break was created before adding this node
    */
@@ -194,7 +201,7 @@ class ReflowParagraphState {
         const current = this.lines.pop();
         const previous = this.lines.pop();
         if (current && previous) {
-          console.debug("Breaking line by merging", {
+          this.log.debug("Breaking line by merging", {
             current,
             previous,
             state,
@@ -207,7 +214,7 @@ class ReflowParagraphState {
           );
         }
       } else {
-        console.debug("Breaking line by starting anew", { state });
+        this.log.debug("Breaking line by starting anew", { state });
         this.previousLineColumn = this.currentLineColumn;
       }
 
@@ -242,11 +249,11 @@ class ReflowParagraphState {
 
 /**
  * Reflow the top-level node containing a paragraph.
- * 
- * @param paragraph 
+ *
+ * @param paragraph
  */
-function reflowParagraph(paragraph: ParentNode) {
-  const state = new ReflowParagraphState();
+function reflowParagraph(log: Logger, paragraph: ParentNode) {
+  const state = new ReflowParagraphState(log);
 
   /**
    * Visitor function for processing a tree of nodes that consist of parts of the paragraph.
@@ -269,7 +276,7 @@ function reflowParagraph(paragraph: ParentNode) {
           }
           state.addText(current.value, isTreePlain);
           current.value = state.render({ isLastChild });
-          console.debug("Added text node", state.getState());
+          log.debug("Added text node", state.getState());
           break;
 
         // Unbreakable nodes
@@ -289,7 +296,7 @@ function reflowParagraph(paragraph: ParentNode) {
               tree.children.splice(i, 0, newTextNode("\n", previous.position));
             }
           }
-          console.debug(
+          log.debug(
             `Added unbreakable '${current.type}' node`,
             state.getState(),
           );
@@ -300,10 +307,10 @@ function reflowParagraph(paragraph: ParentNode) {
         default:
           // Try to process
           if (isParentNode(current)) {
-            console.debug(`Handling children of '${current.type}' node`);
+            log.debug(`Handling children of '${current.type}' node`);
             processParent(current, parentTypes.concat(current.type));
           } else {
-            console.debug(`Ignored '${current.type}' node`);
+            log.debug(`Ignored '${current.type}' node`);
           }
       }
 
@@ -315,6 +322,9 @@ function reflowParagraph(paragraph: ParentNode) {
 }
 
 export default function reflow() {
+  // TODO inject maybe?
+  const log = getLogger();
+
   // Traverse tree looking for the right group of nodes to process
   function visit(node: Node) {
     if (!isParentNode(node)) {
@@ -323,7 +333,7 @@ export default function reflow() {
 
     switch (node.type) {
       case NodeType.Paragraph:
-        reflowParagraph(node);
+        reflowParagraph(log, node);
 
       default:
         node.children.forEach((child) => visit(child));

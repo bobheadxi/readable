@@ -1,4 +1,4 @@
-import remark, { Remark } from "../deps/remark.ts";
+import remark, { Remark } from "../lib/remark.ts";
 
 import plugins from "../plugins/mod.ts";
 

@@ -1,13 +1,13 @@
 # Readable ![pipeline](https://github.com/bobheadxi/readable/workflows/pipeline/badge.svg) [![codecov](https://codecov.io/gh/bobheadxi/readable/branch/main/graph/badge.svg?token=NwwQxKVsbt)](https://codecov.io/gh/bobheadxi/readable)
 
-Opinionated Markdown formatter.
+Opinionated Markdown formatter, featuring [semantic line breaks](#semantic-line-breaks).
 
 ## Usage
 
 Using [Deno](https://deno.land):
 
 ```sh
-deno install --unstable --allow-read --allow-write https://deno.land/x/readable/readable.ts
+deno install --allow-read --allow-write https://deno.land/x/readable/readable.ts
 readable -h
 ```
 
@@ -33,14 +33,14 @@ Readable's formatting performs:
 - Simple, zero-config, standardized formatting for Markdown elements, generally provided by [`remark-stringify`](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify).
 - Support for common extensions (Frontmatter, GitHub Markdown, Math).
 
-### Semantic line breaks
+## Semantic line breaks
 
 In general, Markdown files are written with lines breaks at some arbitrary character column (such as 80 characters), or are written with entire paragraphs on a single line.
 Both these approaches have significant issues:
 
 - Line-breaking at some arbitrary character column looks nice when viewed, but is easily lost when making and suggesting edits, necessitating reflowing entire paragraphs.
   This leads to incomprehensible or uninformative diffs that are difficult to review.
-- Writing entire paragraphs is reasonable readable nowadays due to most editors and viewers performing wrapping out-of-the-box, but they make suggestions and diffs difficult to review due to every single change causing a diff on entire paragraph.
+- Writing entire paragraphs on single lines is reasonably readable nowadays due to most editors and viewers performing wrapping out-of-the-box, but they make suggestions and diffs difficult to review due to every single change causing a diff on entire paragraphs.
 
 Readable performs a variant of [semantic line breaks](https://sembr.org/) that attempts to strike a balance between:
 
@@ -48,12 +48,19 @@ Readable performs a variant of [semantic line breaks](https://sembr.org/) that a
 - Leveraging modern line-wrapping in most viewers to maintain a good **raw Markdown** experience.
 - Maintaining understandable diffs in Markdown documentation for a good **reviewing** experience.
 
-In general, Readable's semantic line breaks:
+In general, Readable's semantic line breaks follows these rules:
 
-- Allow multiple short sentences to be part of a single line.
-- After a character threshold, breaks new sentences to a new line.
+- A *semantic boundary* is defined to be the end of a sentence.
+- Allow multiple short sentences to be part of a single line, up to a character threshold.
+- After a character threshold, a semantic boundary should be followed by a line break.
 
 This means that changes now reflect changes to *ideas* within semantic boundaries, and more accurately reflect the idea being changed.
+
+### Rationale
+
+A blog post detailing the idea behind this project is available here:
+[Semantic Line Breaks](https://bobheadxi.dev/semantic-line-breaks/). A condensed example of the benefits of such a system is outlined here.
+
 For example, consider the following text, where we want to change `incididunt` with `oh I am so hungry`:
 
 ```text

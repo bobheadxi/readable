@@ -1,6 +1,6 @@
 {
-    "deno.enable": true,
-    "coverage-gutters.coverageFileNames": [
-        "cov_profile.lcov"
-    ]
+  "deno.enable": true,
+  "deno.importMap": "./import-map.json",
+  "coverage-gutters.coverageFileNames": ["cov_profile.lcov"],
+  "editor.formatOnSave": false
 }
