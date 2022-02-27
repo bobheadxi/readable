@@ -135,7 +135,6 @@ const devScripts: DevScripts = {
         "test",
         denoImportMapFlag,
         `--coverage=${coverageDir}`,
-        "--unstable",
         ...args,
       ],
     });
@@ -153,7 +152,6 @@ const devScripts: DevScripts = {
         "coverage",
         coverageDir,
         "--lcov",
-        "--unstable",
         `--output=${coverageSummary}`,
       ],
     });
@@ -175,7 +173,6 @@ const devScripts: DevScripts = {
       "deno",
       install ? "install" : "run",
       denoImportMapFlag,
-      "--unstable",
       "--allow-read",
       "--allow-write",
     ];

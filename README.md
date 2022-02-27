@@ -7,7 +7,7 @@ Opinionated Markdown formatter, featuring [semantic line breaks](#semantic-line-
 Using [Deno](https://deno.land):
 
 ```sh
-deno install --unstable --allow-read --allow-write https://deno.land/x/readable/readable.ts
+deno install --allow-read --allow-write https://deno.land/x/readable/readable.ts
 readable -h
 ```
 
