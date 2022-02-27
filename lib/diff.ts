@@ -1,7 +1,19 @@
 import { bgGreen, bgRed, gray } from "fmt/colors.ts";
 import { Logger } from "log/mod.ts";
+import { diffWordsWithSpace } from "diff";
 
-import { diffText } from "../deps/diff.ts";
+export const diffText = diffWordsWithSpace as (
+  oldStr: string,
+  newStr: string,
+) => Parts;
+
+interface Part {
+  value: string;
+  added: boolean;
+  removed: boolean;
+}
+
+type Parts = Part[];
 
 /**
  * Prints coloured diff to console. Returns true if a diff is found.

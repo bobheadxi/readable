@@ -1,4 +1,4 @@
-import remarkImport from "https://jspm.dev/remark@13";
+import remarkImport from "remark";
 
 export type VFile = {
   data: any;

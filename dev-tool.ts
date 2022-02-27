@@ -210,10 +210,6 @@ const devScripts: DevScripts = {
         break;
       }
       case "deno-std": {
-        for await (const f of expandGlob("deps/**/*.ts")) {
-          const content = await Deno.readTextFile(f.path);
-          await Deno.writeTextFile(f.path, content.replaceAll(previous, next));
-        }
         const content = await Deno.readTextFile("import-map.json");
         await Deno.writeTextFile(
           "import-map.json",

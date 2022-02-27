@@ -1,6 +1,7 @@
 import { fail } from "testing/asserts.ts";
-import remark from "../../deps/remark.ts";
+
 import format from "../../markdown/format.ts";
+import remark from "../../lib/remark.ts";
 import { diff } from "../../lib/diff.ts";
 
 import reflow from "./reflow.ts";
