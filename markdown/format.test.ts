@@ -1,4 +1,4 @@
-import { fail } from "../deps/asserts.ts";
+import { fail } from "testing/asserts.ts";
 import { diff } from "../lib/diff.ts";
 
 import format from "./format.ts";

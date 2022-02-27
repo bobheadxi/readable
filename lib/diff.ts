@@ -1,4 +1,4 @@
-import colors from "../deps/colors.ts";
+import { bgGreen, bgRed, gray } from "fmt/colors.ts";
 import { diffText } from "../deps/diff.ts";
 
 /**
@@ -20,10 +20,10 @@ export function diff(
     hasDiff = hasDiff || part.added || part.removed;
     const escapedValue = escapeContent(part.value);
     diffString += part.added
-      ? colors.bgGreen(escapedValue)
+      ? bgGreen(escapedValue)
       : part.removed
-      ? colors.bgRed(escapedValue)
-      : colors.gray(part.value);
+      ? bgRed(escapedValue)
+      : gray(part.value);
   });
   if (hasDiff && options?.print) {
     console.log(diffString);

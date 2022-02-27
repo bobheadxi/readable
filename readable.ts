@@ -1,7 +1,6 @@
+import { cac } from "cac/mod.ts";
+
 import { READABLE_VERSION } from "./version.ts";
-
-import { cac } from "./deps/cac.ts";
-
 import check from "./cmd/check.ts";
 import fmt from "./cmd/fmt.ts";
 
@@ -12,7 +11,8 @@ cli.version(READABLE_VERSION);
 /**
  * readable fmt
  */
-cli.command("fmt [...globs]", "Format Markdown")
+cli
+  .command("fmt [...globs]", "Format Markdown")
   .option("--to-stdout", "Output results to stdout instead of modifying files")
   .action(async (globs: string[], opts: any) => {
     console.debug("fmt");
@@ -22,7 +22,8 @@ cli.command("fmt [...globs]", "Format Markdown")
 /**
  * readable check
  */
-cli.command("check [...globs]", "Check Markdown formatting")
+cli
+  .command("check [...globs]", "Check Markdown formatting")
   .action(async (globs: string[]) => {
     console.debug("check");
     await check(globs);

@@ -1,4 +1,4 @@
-import { expandGlob } from "../deps/fs.ts";
+import { expandGlob } from "fs/mod.ts";
 
 interface FileContents {
   original: string;

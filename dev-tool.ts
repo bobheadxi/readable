@@ -1,4 +1,4 @@
-import { exists, expandGlob } from "./deps/fs.ts";
+import { exists, expandGlob } from "fs/mod.ts";
 
 interface DevEnv {
   // readable metadata
@@ -45,6 +45,8 @@ async function getDevEnv(): Promise<DevEnv> {
   };
 }
 
+const denoImportMapFlag = "--import-map=./import-map.json";
+
 interface DevScripts {
   [k: string]: (args: string[], env: DevEnv) => Promise<void>;
 }
@@ -61,7 +63,7 @@ const devScripts: DevScripts = {
     }
     console.log();
     console.log(
-      "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md"
+      "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md",
     );
   },
   env: async (args, env) => {
@@ -121,7 +123,14 @@ const devScripts: DevScripts = {
     // Test coverage https://deno.land/manual/testing#test-coverage
     const coverageDir = "cov_profile";
     const test = Deno.run({
-      cmd: ["deno", "test", `--coverage=${coverageDir}`, "--unstable", ...args],
+      cmd: [
+        "deno",
+        "test",
+        denoImportMapFlag,
+        `--coverage=${coverageDir}`,
+        "--unstable",
+        ...args,
+      ],
     });
     const { code: testCode } = await test.status();
     if (testCode) {
@@ -133,9 +142,12 @@ const devScripts: DevScripts = {
     }
     const renderCoverage = Deno.run({
       cmd: [
-        "bash",
-        "-c",
-        `deno coverage ${coverageDir} --lcov --unstable > ${coverageSummary}`,
+        "deno",
+        "coverage",
+        coverageDir,
+        "--lcov",
+        "--unstable",
+        `--output=${coverageSummary}`,
       ],
     });
     const { code: coverageCode } = await renderCoverage.status();
@@ -155,6 +167,7 @@ const devScripts: DevScripts = {
     const cmd = [
       "deno",
       install ? "install" : "run",
+      denoImportMapFlag,
       "--unstable",
       "--allow-read",
       "--allow-write",
@@ -240,7 +253,7 @@ const devScripts: DevScripts = {
 
 export const READABLE_VERSION = "${version}";
 export const READABLE_COMMIT = "${env.commit}";
-`
+`,
     );
 
     const commit = Deno.run({

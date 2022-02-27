@@ -3,7 +3,7 @@ USER deno
 
 WORKDIR /bin
 COPY . .
-RUN deno cache --unstable readable.ts
+RUN deno cache --import-map=./import-map.json --unstable readable.ts
 
 ENTRYPOINT [ "deno", "run", "--unstable", "--allow-read", "--allow-write", "/bin/readable.ts" ]
 

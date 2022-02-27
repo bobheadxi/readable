@@ -1,0 +1,8 @@
+{
+   "imports": {
+      "testing/": "https://deno.land/std@0.127.0/testing/",
+      "fmt/": "https://deno.land/std@0.127.0/fmt/",
+      "fs/": "https://deno.land/std@0.127.0/fs/",
+      "cac/": "https://unpkg.com/cac/"
+   }
+}
