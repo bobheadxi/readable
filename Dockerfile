@@ -1,4 +1,4 @@
-FROM denoland/deno:1.13.2
+FROM denoland/deno:1.19.1
 USER deno
 
 WORKDIR /bin
