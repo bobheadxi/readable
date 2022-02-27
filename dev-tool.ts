@@ -91,17 +91,21 @@ const devScripts: DevScripts = {
    */
   fmt: async (args, env) => {
     const check = args ? args[0] === "check" : false;
-    const dir = check ? args[1] : args[0];
+    const watch = args ? args[0] === "watch" : false;
+    const dir = check || watch ? args[1] : args[0];
     const cmd = ["deno", "fmt"];
     if (check) {
       cmd.push("--check");
     } else {
       cmd.push("--quiet");
     }
+    if (watch) {
+      cmd.push("--watch")
+    }
     // 'deno fmt' does not have glob support yet: https://github.com/denoland/deno/issues/6365
     // so we implement our own. this is required because 'deno fmt' now formats markdown,
     // which I don't want.
-    const globPattern = `${dir ? `${dir}/` : ""}**/*.ts`;
+    const globPattern = `${dir ? `${dir}/` : ""}**/**.ts`;
     console.log(`${check ? "Checking" : "Formatting"} '${globPattern}'`);
     for await (const f of expandGlob(globPattern)) {
       if (!f.name.endsWith(".ts")) continue;
@@ -122,6 +126,9 @@ const devScripts: DevScripts = {
   test: async (args) => {
     // Test coverage https://deno.land/manual/testing#test-coverage
     const coverageDir = "cov_profile";
+    if (await exists(coverageDir)) {
+      await Deno.remove(coverageDir);
+    }
     const test = Deno.run({
       cmd: [
         "deno",
