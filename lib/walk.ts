@@ -1,4 +1,5 @@
 import { expandGlob } from "fs/mod.ts";
+import { Logger } from "log/mod.ts";
 
 interface FileContents {
   original: string;
@@ -6,14 +7,20 @@ interface FileContents {
   fullPath: string;
 }
 
+const DEFAULT_GLOB = "**/*.md";
+
 export async function walkGlobs(
+  log: Logger,
   globs: string[],
   render: (contents: string) => string,
 ): Promise<Map<string, FileContents>> {
+  // Set default globs
+  if (globs.length == 0) globs.push(DEFAULT_GLOB);
+
+  // Process globs
   const results = new Map<string, FileContents>();
-  if (globs.length == 0) globs.push("**/*.md");
   for (let glob of globs) {
-    console.debug(`processing ${glob}`);
+    log.debug(`processing ${glob}`);
     for await (const file of expandGlob(glob)) {
       if (file.isDirectory || file.isSymlink) continue;
       try {

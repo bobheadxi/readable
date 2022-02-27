@@ -1,4 +1,6 @@
 import { bgGreen, bgRed, gray } from "fmt/colors.ts";
+import { Logger } from "log/mod.ts";
+
 import { diffText } from "../deps/diff.ts";
 
 /**
@@ -11,7 +13,7 @@ import { diffText } from "../deps/diff.ts";
 export function diff(
   expected: string,
   got: string,
-  options: { print: boolean } = { print: true },
+  options: { log: Logger | undefined } = { log: undefined },
 ): boolean {
   const parts = diffText(expected, got);
   let hasDiff = false;
@@ -25,8 +27,8 @@ export function diff(
       ? bgRed(escapedValue)
       : gray(part.value);
   });
-  if (hasDiff && options?.print) {
-    console.log(diffString);
+  if (hasDiff && options?.log) {
+    options.log.info(diffString);
   }
   return hasDiff;
 }

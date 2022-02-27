@@ -1,12 +1,15 @@
 import { cac } from "cac/mod.ts";
+import { processArgs } from "cac/deno/deno.ts";
+import { getLogger, handlers, setup as setupLogger } from "log/mod.ts";
 
 import { READABLE_VERSION } from "./version.ts";
 import check from "./cmd/check.ts";
-import fmt from "./cmd/fmt.ts";
+import fmt, { FmtOptions } from "./cmd/fmt.ts";
 
-const cli = cac("readable");
-
-cli.version(READABLE_VERSION);
+const cli = cac("readable")
+  .version(READABLE_VERSION)
+  .help()
+  .option("--log-level <level>", "Set a log level", { default: "INFO" });
 
 /**
  * readable fmt
@@ -14,9 +17,9 @@ cli.version(READABLE_VERSION);
 cli
   .command("fmt [...globs]", "Format Markdown")
   .option("--to-stdout", "Output results to stdout instead of modifying files")
-  .action(async (globs: string[], opts: any) => {
-    console.debug("fmt");
-    await fmt(globs, opts);
+  .action(async (globs: string[], opts: FmtOptions) => {
+    const log = getLogger();
+    await fmt(log, globs, opts);
   });
 
 /**
@@ -25,14 +28,9 @@ cli
 cli
   .command("check [...globs]", "Check Markdown formatting")
   .action(async (globs: string[]) => {
-    console.debug("check");
-    await check(globs);
+    const log = getLogger();
+    await check(log, globs);
   });
-
-/**
- * Show help message on -h and --help flags
- */
-cli.help();
 
 /**
  * Run input commands if run as a script.
@@ -47,9 +45,21 @@ if (import.meta.main) {
   }
 
   try {
-    cli.parse();
+    const parsed = cli.parse(processArgs, { run: false });
+    await setupLogger({
+      handlers: {
+        console: new handlers.ConsoleHandler("DEBUG"),
+      },
+      loggers: {
+        default: {
+          level: parsed.options.logLevel || "WARNING",
+          handlers: ["console"],
+        },
+      },
+    });
+    await cli.runMatchedCommand();
   } catch (err) {
-    console.error(`${err.message}`);
+    getLogger().error(`${err.message}`);
     Deno.exit(1);
   }
 }

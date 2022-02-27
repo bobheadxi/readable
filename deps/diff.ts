@@ -1,4 +1,4 @@
-import { diffWordsWithSpace } from "https://jspm.dev/diff@5.0.0";
+import { diffWordsWithSpace } from "https://cdn.skypack.dev/diff@5";
 
 export const diffText = diffWordsWithSpace as (
   oldStr: string,

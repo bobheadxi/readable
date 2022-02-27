@@ -100,7 +100,7 @@ const devScripts: DevScripts = {
       cmd.push("--quiet");
     }
     if (watch) {
-      cmd.push("--watch")
+      cmd.push("--watch");
     }
     // 'deno fmt' does not have glob support yet: https://github.com/denoland/deno/issues/6365
     // so we implement our own. this is required because 'deno fmt' now formats markdown,
@@ -127,7 +127,7 @@ const devScripts: DevScripts = {
     // Test coverage https://deno.land/manual/testing#test-coverage
     const coverageDir = "cov_profile";
     if (await exists(coverageDir)) {
-      await Deno.remove(coverageDir);
+      await Deno.remove(coverageDir, { recursive: true });
     }
     const test = Deno.run({
       cmd: [
@@ -185,7 +185,8 @@ const devScripts: DevScripts = {
     const p = Deno.run({ cmd: [...cmd, ...target] });
     const { code } = await p.status();
     if (code) {
-      throw new Error(`readable exited with status ${code}`);
+      console.error(`readable exited with status ${code}`);
+      Deno.exit(code);
     }
   },
   upgrade: async (args) => {
@@ -213,6 +214,11 @@ const devScripts: DevScripts = {
           const content = await Deno.readTextFile(f.path);
           await Deno.writeTextFile(f.path, content.replaceAll(previous, next));
         }
+        const content = await Deno.readTextFile("import-map.json");
+        await Deno.writeTextFile(
+          "import-map.json",
+          content.replaceAll(previous, next),
+        );
         break;
       }
       default:

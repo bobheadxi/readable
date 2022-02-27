@@ -1,16 +1,23 @@
+import { Logger } from "log/mod.ts";
 import format from "../markdown/format.ts";
 import { walkGlobs } from "../lib/walk.ts";
 
-export default async function fmt(globs: string[], opts: {
+export type FmtOptions = {
   toStdout: boolean;
-}) {
-  const results = await walkGlobs(globs, format);
+};
+
+export default async function fmt(
+  log: Logger,
+  globs: string[],
+  opts: FmtOptions,
+) {
+  const results = await walkGlobs(log, globs, format);
   for (let [path, content] of results) {
     if (opts.toStdout) {
-      console.log(`%c${path}`, "font-weight:bold");
-      console.log(content.rendered);
+      log.info(`%c${path}`, "font-weight:bold");
+      log.info(content.rendered);
     } else {
-      console.log(path);
+      log.info(path);
       Deno.writeTextFile(content.fullPath, content.rendered);
     }
   }
