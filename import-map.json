@@ -11,6 +11,8 @@
       "micromark-extension-frontmatter": "https://jspm.dev/micromark-extension-frontmatter@1",
       "mdast-util-frontmatter": "https://jspm.dev/mdast-util-frontmatter@1",
       "remark-gfm": "https://cdn.skypack.dev/remark-gfm@1",
-      "remark-math": "https://cdn.skypack.dev/remark-math@5"
+      "remark-math": "https://cdn.skypack.dev/remark-math@5",
+      "ohm-js": "https://unpkg.com/ohm-js@16/dist/ohm.esm.js",
+      "ohm-js-extras": "https://unpkg.com/ohm-js@16/extras/index.js"
    }
 }
