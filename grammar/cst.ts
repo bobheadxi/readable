@@ -20,4 +20,4 @@ export type Expression =
   | "SemanticSentence"
   | "SemanticPause"
   | "Word"
-  | "SentenceEnd";
+  | "sentenceEnd";

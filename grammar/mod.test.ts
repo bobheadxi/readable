@@ -67,7 +67,7 @@ new TestSuite<
               }],
             }],
           }, {
-            expression: "SentenceEnd",
+            expression: "sentenceEnd",
           }],
         },
         {
@@ -84,7 +84,7 @@ new TestSuite<
               ],
             }],
           }, {
-            expression: "SentenceEnd",
+            expression: "sentenceEnd",
           }],
         },
       ],
@@ -113,7 +113,7 @@ new TestSuite<
               }],
             }],
           }, {
-            expression: "SentenceEnd",
+            expression: "sentenceEnd",
           }],
         },
       ],
@@ -143,7 +143,7 @@ new TestSuite<
               }],
             }],
           }, {
-            expression: "SentenceEnd",
+            expression: "sentenceEnd",
           }],
         },
       ],
@@ -175,7 +175,7 @@ new TestSuite<
               }],
             }],
           }, {
-            expression: "SentenceEnd",
+            expression: "sentenceEnd",
           }],
         },
       ],

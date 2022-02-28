@@ -8,14 +8,13 @@ English {
 
   // Multiple words and pauses in between count towards
   // a semantic line
-	SemanticLine = SemanticSentence (SemanticBreak | SentenceEnd)
+  SemanticLine = SemanticSentence (semanticBreak | sentenceEnd) 
   SemanticSentence = (Word | SemanticPause)+
 
 	// Sentence end is demarcated usually by punctuation
-  SemanticBreak = ":" | ";" | "--" | "-" | "–"
-  SentenceEnd = "." | "!" | "?" | end
+  semanticBreak = (":" | ";" | "--" | "-" | "–") space*
+  sentenceEnd = ("." | "!" | "?" | end) space*
 
-  // Pauses count towards a sentence
   SemanticPause = ","
 
   // A word can come in many forms
