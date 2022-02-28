@@ -1,4 +1,5 @@
 import { fail } from "testing/asserts.ts";
+import { getLogger } from "log/mod.ts";
 
 import format from "../../markdown/format.ts";
 import remark from "../../lib/remark.ts";
@@ -14,7 +15,7 @@ import { lorenIpsumLines, lorenIpsumText, TestSuite } from "../../lib/test.ts";
     "plugins/readable/reflow:e2e",
     (testCase) => {
       const got = format(testCase.input, testRemark);
-      if (diff(testCase.expect, got)) {
+      if (diff(testCase.expect, got, { log: getLogger() })) {
         fail("Unexpected diff");
       }
     },
