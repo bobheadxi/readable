@@ -151,7 +151,6 @@ new TestSuite<
     {
       case: "acronym",
       input: "Some things, e.g. chicken",
-      only: true,
       expect: [
         {
           expression: "SemanticLine",
@@ -164,7 +163,7 @@ new TestSuite<
               }, {
                 expression: "Word",
               }, {
-                expression: "SemanticPause",
+                expression: "InlinePunctuation",
               }, {
                 expression: "Word",
                 children: [{

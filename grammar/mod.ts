@@ -9,13 +9,14 @@ English {
   // Multiple words and pauses in between count towards
   // a semantic line
   SemanticLine = SemanticSentence (semanticBreak | sentenceEnd) 
-  SemanticSentence = (Word | SemanticPause)+
+  SemanticSentence = (Word | InlinePunctuation)+
 
 	// Sentence end is demarcated usually by punctuation
   semanticBreak = (":" | ";" | "--" | "-" | "–") space*
   sentenceEnd = ("." | "!" | "?" | end) space*
 
-  SemanticPause = ","
+  // Punctuation that is part of a sentence
+  InlinePunctuation = "," | "\"" | "\'"
 
   // A word can come in many forms
   Word = rawContent

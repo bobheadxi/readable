@@ -18,6 +18,6 @@ export type Expression =
   | "_iter"
   | "SemanticLine"
   | "SemanticSentence"
-  | "SemanticPause"
+  | "InlinePunctuation"
   | "Word"
   | "sentenceEnd";
