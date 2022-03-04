@@ -6,17 +6,30 @@ export const english = ohm.grammar(String.raw`
 English {
   Paragraph = SemanticLine+
 
-  // Multiple words and pauses in between count towards
-  // a semantic line
-  SemanticLine = SemanticSentence (semanticBreak | sentenceEnd) 
-  SemanticSentence = (Word | InlinePunctuation)+
+  // SemanticLine is a semantic clause and the delimiting
+  // semantic boundary.
+  SemanticLine = SemanticClause semanticBoundary
+  SemanticClause = (Word | InlinePunctuation)+
 
-	// Sentence end is demarcated usually by punctuation
-  semanticBreak = (":" | ";" | "--" | "-" | "–") space*
-  sentenceEnd = ("." | "!" | "?" | end) space*
+  // SemanticBoundary delimits a semantic clause. We also
+  // want to capture the spaces following a boundary break
+  // to facilitate reconstruction.
+  semanticBoundary = (semanticBreak | sentenceEnd) space*
+
+  // semanticBreak are punctuation marks that are often
+  // used to delimit a substantial unit of thought.
+  semanticBreak = ":" | ";" -- colon
+    | "--" | "-" | "–"      -- emDash
+    | ") "                  -- endParens
+
+  // sentenceEnd are standard sentence-ending punctuation
+  // marks or the end of input.
+  sentenceEnd = "." | "!" | "?" | end
 
   // Punctuation that is part of a sentence
-  InlinePunctuation = "," | "\"" | "\'"
+  InlinePunctuation = "," -- comma
+    | "\"" | "\'"         -- quotations
+    | "(" | ~") " ")"     -- inlineParens
 
   // A word can come in many forms
   Word = rawContent
@@ -25,8 +38,8 @@ English {
     | contractedWord
     | singleWord
 
-	// Various types of words
-	singleWord = (letter | digit)+
+  // Various types of words
+  singleWord = (letter | digit)+
   concatenatedWord = singleWord "-" singleWord
   contractedWord = singleWord "\'" letter
   acronym = (letter ".")+

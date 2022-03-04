@@ -57,7 +57,7 @@ new TestSuite<
         {
           expression: "SemanticLine",
           children: [{
-            expression: "SemanticSentence",
+            expression: "SemanticClause",
             children: [{
               expression: "_iter",
               children: [{
@@ -67,13 +67,13 @@ new TestSuite<
               }],
             }],
           }, {
-            expression: "sentenceEnd",
+            expression: "semanticBoundary",
           }],
         },
         {
           expression: "SemanticLine",
           children: [{
-            expression: "SemanticSentence",
+            expression: "SemanticClause",
             children: [{
               expression: "_iter",
               children: [
@@ -84,7 +84,7 @@ new TestSuite<
               ],
             }],
           }, {
-            expression: "sentenceEnd",
+            expression: "semanticBoundary",
           }],
         },
       ],
@@ -96,7 +96,7 @@ new TestSuite<
         {
           expression: "SemanticLine",
           children: [{
-            expression: "SemanticSentence",
+            expression: "SemanticClause",
             children: [{
               expression: "_iter",
               children: [{
@@ -113,7 +113,7 @@ new TestSuite<
               }],
             }],
           }, {
-            expression: "sentenceEnd",
+            expression: "semanticBoundary",
           }],
         },
       ],
@@ -126,7 +126,7 @@ new TestSuite<
         {
           expression: "SemanticLine",
           children: [{
-            expression: "SemanticSentence",
+            expression: "SemanticClause",
             children: [{
               expression: "_iter",
               children: [{
@@ -143,7 +143,7 @@ new TestSuite<
               }],
             }],
           }, {
-            expression: "sentenceEnd",
+            expression: "semanticBoundary",
           }],
         },
       ],
@@ -155,7 +155,7 @@ new TestSuite<
         {
           expression: "SemanticLine",
           children: [{
-            expression: "SemanticSentence",
+            expression: "SemanticClause",
             children: [{
               expression: "_iter",
               children: [{
@@ -174,7 +174,7 @@ new TestSuite<
               }],
             }],
           }, {
-            expression: "sentenceEnd",
+            expression: "semanticBoundary",
           }],
         },
       ],
@@ -196,6 +196,21 @@ new TestSuite<
       expect: [
         { expression: "SemanticLine" },
         { expression: "SemanticLine" },
+        { expression: "SemanticLine" },
+      ],
+    },
+    {
+      case: "semantic line break parens",
+      input: `Word (a subphrase) and another word.`,
+      expect: [
+        { expression: "SemanticLine" },
+        { expression: "SemanticLine" },
+      ],
+    },
+    {
+      case: "inline parens",
+      input: `Word (a subphrase), and another word.`,
+      expect: [
         { expression: "SemanticLine" },
       ],
     },

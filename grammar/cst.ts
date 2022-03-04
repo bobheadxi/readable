@@ -17,7 +17,7 @@ export type Node = {
 export type Expression =
   | "_iter"
   | "SemanticLine"
-  | "SemanticSentence"
+  | "SemanticClause"
   | "InlinePunctuation"
   | "Word"
-  | "sentenceEnd";
+  | "semanticBoundary";
