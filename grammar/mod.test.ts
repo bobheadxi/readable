@@ -17,7 +17,7 @@ function assertNodesEqual(actual: Node, want: assertNode) {
   assertEquals(
     actual.children.length,
     want.children.length,
-    want.children.map((c) => c.expression).join(", "),
+    `got [${actual.children.map((c) => c.ctorName).join(", ")}], want [${want.children.map((c) => c.expression).join(", ")}]` ,
   );
   want.children.forEach((n, i) => {
     assertNodesEqual(actual.children[i], n);
@@ -211,6 +211,22 @@ new TestSuite<
       case: "inline parens",
       input: `Word (a subphrase), and another word.`,
       expect: [
+        {
+          expression: "SemanticLine",
+          children: [{
+            expression: "SemanticClause",
+          }, {
+            expression: "semanticBoundary",
+            children: [{
+              expression: "semanticBreak",
+              children: [{
+                expression: "semanticBreak_endParens" as Expression
+              }]
+            }, {
+              expression: "_iter"
+            }]
+          }],
+        },
         { expression: "SemanticLine" },
       ],
     },

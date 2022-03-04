@@ -11,7 +11,7 @@ export type ConcreteSyntaxTree = {
 export type Node = {
   ctorName: Expression;
   matchLength: string;
-  children: any[];
+  children: Node[];
 };
 
 export type Expression =
@@ -20,4 +20,5 @@ export type Expression =
   | "SemanticClause"
   | "InlinePunctuation"
   | "Word"
-  | "semanticBoundary";
+  | "semanticBoundary"
+  | "semanticBreak";

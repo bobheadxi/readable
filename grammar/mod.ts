@@ -20,16 +20,16 @@ English {
   // used to delimit a substantial unit of thought.
   semanticBreak = ":" | ";" -- colon
     | "--" | "-" | "–"      -- emDash
-    | ") "                  -- endParens
+    | ") " | "),"           -- endParens
 
   // sentenceEnd are standard sentence-ending punctuation
   // marks or the end of input.
   sentenceEnd = "." | "!" | "?" | end
 
   // Punctuation that is part of a sentence
-  InlinePunctuation = "," -- comma
-    | "\"" | "\'"         -- quotations
-    | "(" | ~") " ")"     -- inlineParens
+  InlinePunctuation = ","      -- comma
+    | "\"" | "\'"              -- quotations
+    | "(" | ~(") " | "),") ")" -- inlineParens
 
   // A word can come in many forms
   Word = rawContent
