@@ -49,6 +49,7 @@ A short \`sentence\`! This next sentence is long, with [a link](https://bobheadx
 A short \`sentence\`!
 This next sentence is long, with [a link](https://bobheadxi.dev) and **emphasis** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
 `,
+        only: true,
       },
       {
         case: "short sentence followed by short sentence should be merged",

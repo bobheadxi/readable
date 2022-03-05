@@ -17,7 +17,9 @@ function assertNodesEqual(actual: Node, want: assertNode) {
   assertEquals(
     actual.children.length,
     want.children.length,
-    `got [${actual.children.map((c) => c.ctorName).join(", ")}], want [${want.children.map((c) => c.expression).join(", ")}]` ,
+    `got [${actual.children.map((c) => c.ctorName).join(", ")}], want [${
+      want.children.map((c) => c.expression).join(", ")
+    }]`,
   );
   want.children.forEach((n, i) => {
     assertNodesEqual(actual.children[i], n);
@@ -220,11 +222,11 @@ new TestSuite<
             children: [{
               expression: "semanticBreak",
               children: [{
-                expression: "semanticBreak_endParens" as Expression
-              }]
+                expression: "semanticBreak_endParens" as Expression,
+              }],
             }, {
-              expression: "_iter"
-            }]
+              expression: "_iter",
+            }],
           }],
         },
         { expression: "SemanticLine" },
