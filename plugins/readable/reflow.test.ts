@@ -87,9 +87,24 @@ The next sentence is here.
       {
         case: "handle multi-line link",
         input: `[Instructions for allocating a fresh diagnostic
-        code can be found here.](./diagnostics/diagnostic-codes.md)`,
+      code can be found here.](./diagnostics/diagnostic-codes.md)`,
         expect:
           "[Instructions for allocating a fresh diagnostic code can be found here.](./diagnostics/diagnostic-codes.md)\n",
+      },
+      {
+        case: "ignore acronyms 1",
+        input:
+          `Upload the repository to a specific "sourcegraph-$ LANGUAGE" organization (where $LANGUAGE is the primary language of the repository as identified by github.com) (e.x. the ["sourcegraph-go" organization](https://ghe.sgdev.org/sourcegraph-go) for <https://ghe.sgdev.org/sourcegraph-go/gorilla-mux>)`,
+        expect:
+          `Upload the repository to a specific "sourcegraph-$ LANGUAGE" organization (where $LANGUAGE is the primary language of the repository as identified by github.com) (e.x. the ["sourcegraph-go" organization](https://ghe.sgdev.org/sourcegraph-go) for <https://ghe.sgdev.org/sourcegraph-go/gorilla-mux>)
+`,
+      },
+      {
+        case: "ignore acronyms 2",
+        input:
+          `For example, the contents of individual items (e.g. modules, functions, traits, impls, etc) in the HIR are not immediately accessible in the parents.`,
+        expect:
+          "For example, the contents of individual items (e.g. modules, functions, traits, impls, etc) in the HIR are not immediately accessible in the parents.\n",
       },
     ],
   );

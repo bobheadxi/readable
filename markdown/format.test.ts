@@ -1,5 +1,5 @@
-import { fail } from "testing/asserts.ts";
 import { getLogger } from "log/mod.ts";
+import { fail } from "testing/asserts.ts";
 
 import { diff } from "../lib/diff.ts";
 import format from "./format.ts";

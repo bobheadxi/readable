@@ -40,6 +40,10 @@ export interface TestCase<InputT, OutputT> extends DenoTestArgs {
    * Expected output.
    */
   expect: OutputT;
+  /**
+   * Whether or not to only run this test.
+   */
+  only?: boolean;
 }
 
 /**

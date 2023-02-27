@@ -14,10 +14,14 @@ import { escapeContent } from "../../lib/diff.ts";
 /**
  * End of sentence is marked by a period, exclamation point, question mark, colon, or semicolon.
  * Except for colon or semicolon, a final or preceding parenthesis or quote is allowed.
+ *
+ * If the word preceding the end-of-sentence punctuation is a character set of less than
+ * length 2, it's probably an acronym (like 'e.g.'), so it's not the end of a sentence.
  */
 function isEndOfSentenceWord(word: string): boolean {
+  // To understand this regexp, pop it into https://regexr.com/
   return !!word.match(
-    /([.?!]['"’”)]?|['"’”)][.?!]|[:]) *$/,
+    /(([a-zA-Z]{2,}|^)[.?!]['"’”)]?|['"’”)][.?!]|[:]) *$/,
   );
 }
 
