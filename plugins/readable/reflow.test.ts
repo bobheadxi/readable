@@ -92,9 +92,7 @@ The next sentence is here.
           "[Instructions for allocating a fresh diagnostic code can be found here.](./diagnostics/diagnostic-codes.md)\n",
       },
       {
-        // TODO https://github.com/bobheadxi/readable/issues/7#issuecomment-765043636
         case: "ignore 'sentences' that look like acronyms",
-        only: true,
         input:
           `Upload the repository to a specific "sourcegraph-$ LANGUAGE" organization (where $LANGUAGE is the primary language of the repository as identified by github.com) (e.x. the ["sourcegraph-go" organization](https://ghe.sgdev.org/sourcegraph-go) for <https://ghe.sgdev.org/sourcegraph-go/gorilla-mux>)`,
         expect:
