@@ -36,8 +36,8 @@ and this is another paragraph!
 
 Deno.test({
   name: testSuite,
-  fn: () => {
-    const got = format(input);
+  fn: async () => {
+    const got = await format(input);
     if (diff(want, got, { log: getLogger() })) {
       fail("Unexpected diff");
     }

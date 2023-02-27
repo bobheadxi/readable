@@ -1,4 +1,6 @@
-import remark, { Remark } from "../lib/remark.ts";
+import "./docshim.ts"
+
+import { remark, Remark } from "../lib/remark.ts";
 
 import plugins from "../plugins/mod.ts";
 
@@ -8,14 +10,10 @@ for (const p of plugins) {
 }
 
 // formatting configuration
-export default function format(
+export default async function format(
   markdown: string,
   configuredRemark: Remark = defaultRemark,
-): string {
-  let formatted = markdown;
-  configuredRemark.process(markdown, (err, file) => {
-    if (err) throw err;
-    formatted = String(file);
-  });
-  return formatted;
+): Promise<string> {
+  const file = await configuredRemark.process(markdown);
+  return String(file);
 }

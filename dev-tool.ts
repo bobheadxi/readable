@@ -134,6 +134,7 @@ const devScripts: DevScripts = {
         "deno",
         "test",
         denoImportMapFlag,
+        "--no-check",
         `--coverage=${coverageDir}`,
         ...args,
       ],
