@@ -1,11 +1,11 @@
 {
    "imports": {
-      "testing/": "https://deno.land/std@0.127.0/testing/",
-      "fmt/": "https://deno.land/std@0.127.0/fmt/",
-      "fs/": "https://deno.land/std@0.127.0/fs/",
-      "log/": "https://deno.land/std@0.127.0/log/",
-      "cac/": "https://unpkg.dev/cac@6.7.12/",
+      "testing/": "https://deno.land/std@0.178.0/testing/",
+      "fmt/": "https://deno.land/std@0.178.0/fmt/",
+      "fs/": "https://deno.land/std@0.178.0/fs/",
+      "log/": "https://deno.land/std@0.178.0/log/",
 
+      "cac/": "https://unpkg.dev/cac@6.7.12/",
       "diff": "https://cdn.skypack.dev/diff@5",
       "remark": "https://jspm.dev/remark@13",
       "micromark-extension-frontmatter": "https://jspm.dev/micromark-extension-frontmatter@1",
