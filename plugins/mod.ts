@@ -7,7 +7,8 @@ import readable from "../plugins/readable/mod.ts";
 export default [
   thirdparty.gfm,
   thirdparty.frontmatter,
-  thirdparty.math,
+  // TODO this messes up with use of inline $VARIABLE
+  // thirdparty.math,
   readable.reflow,
   thirdparty.stringify,
 ];

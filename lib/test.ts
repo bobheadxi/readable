@@ -4,6 +4,10 @@
  * Testing utilities.
  */
 
+import setupLogger from "./setupLogger.ts";
+
+await setupLogger("DEBUG");
+
 /**
  * Subset of `Deno.TestDefinition` for extending test cases.
  */

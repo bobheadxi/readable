@@ -1,10 +1,11 @@
 import { cac } from "cac/mod.ts";
 import { processArgs } from "cac/deno/deno.ts";
-import { getLogger, handlers, setup as setupLogger } from "log/mod.ts";
+import { getLogger } from "log/mod.ts";
 
 import { READABLE_VERSION } from "./version.ts";
 import check from "./cmd/check.ts";
 import fmt, { FmtOptions } from "./cmd/fmt.ts";
+import setupLogger from "./lib/setupLogger.ts";
 
 const cli = cac("readable")
   .version(READABLE_VERSION)
@@ -18,7 +19,7 @@ cli
   .command("fmt [...globs]", "Format Markdown")
   .option("--to-stdout", "Output results to stdout instead of modifying files")
   .action(async (globs: string[], opts: FmtOptions) => {
-    const log = getLogger();
+    const log = getLogger("fmt");
     await fmt(log, globs, opts);
   });
 
@@ -28,7 +29,7 @@ cli
 cli
   .command("check [...globs]", "Check Markdown formatting")
   .action(async (globs: string[]) => {
-    const log = getLogger();
+    const log = getLogger("check");
     await check(log, globs);
   });
 
@@ -46,17 +47,7 @@ if (import.meta.main) {
 
   try {
     const parsed = cli.parse(processArgs, { run: false });
-    await setupLogger({
-      handlers: {
-        console: new handlers.ConsoleHandler("DEBUG"),
-      },
-      loggers: {
-        default: {
-          level: parsed.options.logLevel || "WARNING",
-          handlers: ["console"],
-        },
-      },
-    });
+    await setupLogger(parsed.options.logLevel);
     await cli.runMatchedCommand();
   } catch (err) {
     getLogger().error(`${err.message}`);

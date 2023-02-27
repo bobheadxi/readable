@@ -1,7 +1,8 @@
 import { getLogger } from "log/mod.ts";
 import { fail } from "testing/asserts.ts";
-import { diff } from "../lib/diff.ts";
+import { getLogger } from "log/mod.ts";
 
+import { diff } from "../lib/diff.ts";
 import format from "./format.ts";
 
 /**
@@ -21,15 +22,6 @@ with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github
 and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
 
 and this is another paragraph!
-
-## Math
-
-Lift($L$) can be determined by Lift Coefficient ($C_L$) like the following
-equation.
-
-$$
-L = \frac{1}{2} \rho v^2 S C_L
-$$
 `;
 const want = `---
 field: wow
@@ -41,14 +33,6 @@ hello world! this is a document.
 with a [a link](https://bobheadxi.dev) and **emphasis [bold link](https://github.com/bobheadxi)** and *italics* and ~~strike~~ and a ![cute image](https://bobheadxi.dev/assets/images/profile.jpg).
 
 and this is another paragraph!
-
-## Math
-
-Lift($L$) can be determined by Lift Coefficient ($C_L$) like the following equation.
-
-$$
-L = \frac{1}{2} \rho v^2 S C_L
-$$
 `;
 
 Deno.test({

@@ -31,7 +31,7 @@ Readable's formatting performs:
 
 - [Semantic line breaks](#semantic-line-breaks).
 - Simple, zero-config, standardized formatting for Markdown elements, generally provided by [`remark-stringify`](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify).
-- Support for common extensions (Frontmatter, GitHub Markdown, Math).
+- Support for common extensions (Frontmatter and GitHub Markdown).
 
 ## Semantic line breaks
 

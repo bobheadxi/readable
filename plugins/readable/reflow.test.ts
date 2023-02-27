@@ -85,6 +85,13 @@ The next sentence is here.
 `,
       },
       {
+        case: "handle multi-line link",
+        input: `[Instructions for allocating a fresh diagnostic
+      code can be found here.](./diagnostics/diagnostic-codes.md)`,
+        expect:
+          "[Instructions for allocating a fresh diagnostic code can be found here.](./diagnostics/diagnostic-codes.md)\n",
+      },
+      {
         // TODO https://github.com/bobheadxi/readable/issues/7#issuecomment-765043636
         case: "ignore 'sentences' that look like acronyms",
         only: true,
