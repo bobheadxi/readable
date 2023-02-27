@@ -86,9 +86,9 @@ export interface Node {
  */
 export function nodeLength(n: Node): number {
   if (n.position.start.line !== n.position.end.line) {
-    // for multi-line nodes, simply use the length of the value if available
+    // If we have a value, just take that length
     if (isLiteralNode(n)) return n.value.length;
-    else throw new Error(`Cannot take length of multi-line node '${n}'`);
+    else throw new Error(`Cannot infer length of node '${JSON.stringify(n)}'`);
   }
   return n.position.end.column - n.position.start.column;
 }

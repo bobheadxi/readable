@@ -84,6 +84,13 @@ The next sentence is here.`,
 The next sentence is here.
 `,
       },
+      {
+        case: "handle multi-line link",
+        input: `[Instructions for allocating a fresh diagnostic
+        code can be found here.](./diagnostics/diagnostic-codes.md)`,
+        expect:
+          "[Instructions for allocating a fresh diagnostic code can be found here.](./diagnostics/diagnostic-codes.md)\n",
+      },
     ],
   );
 }

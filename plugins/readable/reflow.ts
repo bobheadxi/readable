@@ -71,7 +71,7 @@ class ReflowParagraphState {
   }
 
   /**
-   * Add a node that should not be processed to the paragraph.
+   * Add a node that should not be processed to have line breaks to the paragraph.
    *
    * @param node markdown AST node
    * @returns whether or not a line break should follow
@@ -81,7 +81,21 @@ class ReflowParagraphState {
     if (this.sentenceEnded) {
       this.breakLine({ rawNode: true });
     }
-    this.currentLineColumn += nodeLength(node);
+    if (
+      !isLiteralNode(node) && isParentNode(node) && node.children.length == 1
+    ) {
+      // If this is a parent node with no direct value, get the length of its child that
+      // represents the direct value.
+      const content = node.children[0];
+      this.currentLineColumn += nodeLength(content);
+      // Also strip line breaks from this child node's value, if possible, to normalize
+      // raw elements to have single lines.
+      if (isLiteralNode(content)) {
+        content.value = content.value.replaceAll("\n", " ");
+      }
+    } else {
+      this.currentLineColumn += nodeLength(node);
+    }
     return this.sentenceEnded ? this.breakLine({ rawNode: true }) : false;
   }
 
@@ -118,11 +132,11 @@ class ReflowParagraphState {
   /**
    * Previous line's column position
    */
-  private previousLineColumn: number = 0;
+  private previousLineColumn = 0;
   /**
    * Current line's column position
    */
-  private currentLineColumn: number = 0;
+  private currentLineColumn = 0;
   /**
    * Words that make up the current line
    */
@@ -131,11 +145,11 @@ class ReflowParagraphState {
   /**
    * Whether a break is allowed in the current line
    */
-  private breakAllowed: boolean = false;
+  private breakAllowed = false;
   /**
    * Whether a sentence end has been detected in the current line
    */
-  private sentenceEnded: boolean = false;
+  private sentenceEnded = false;
 
   /**
    * Do a sentence wrap only after this column.
@@ -185,7 +199,7 @@ class ReflowParagraphState {
     // If a node isPlain (i.e. not inside a strong/emphasis/link) it's fine to break
     // immediately. If not (i.e. is strong/emphasis/link formatted), we can't break it on
     // the first character, so have to wait until next opportunity.
-    const canBreakLine = (state?.isTreePlain || this.currentLineColumn > 0);
+    const canBreakLine = state?.isTreePlain || this.currentLineColumn > 0;
 
     // Decide a line break strategy if allowed.
     if (this.breakAllowed && canBreakLine) {
@@ -282,7 +296,7 @@ function reflowParagraph(log: Logger, paragraph: ParentNode) {
         // Unbreakable nodes
 
         case NodeType.Link:
-        case NodeType.InlineCode:
+        case NodeType.InlineCode: {
           // Since we aren't just breaking the value of a text node, we need to make
           // adjustments to the previous node or the tree.
           const shouldBreakLine = state.addRawNode(current);
@@ -301,6 +315,7 @@ function reflowParagraph(log: Logger, paragraph: ParentNode) {
             state.getState(),
           );
           break;
+        }
 
         // Unhandled nodes
 
@@ -333,6 +348,7 @@ export default function reflow() {
     switch (node.type) {
       case NodeType.Paragraph:
         reflowParagraph(log, node);
+        break;
 
       default:
         node.children.forEach((child) => visit(child));
