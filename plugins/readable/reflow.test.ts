@@ -101,9 +101,11 @@ The next sentence is here.
       },
       {
         case: "ignore acronyms 2",
-        input: `For example, the contents of individual items (e.g. modules, functions, traits, impls, etc) in the HIR are not immediately accessible in the parents.`,
-        expect: "For example, the contents of individual items (e.g. modules, functions, traits, impls, etc) in the HIR are not immediately accessible in the parents.\n",
-      }
+        input:
+          `For example, the contents of individual items (e.g. modules, functions, traits, impls, etc) in the HIR are not immediately accessible in the parents.`,
+        expect:
+          "For example, the contents of individual items (e.g. modules, functions, traits, impls, etc) in the HIR are not immediately accessible in the parents.\n",
+      },
     ],
   );
 }
