@@ -5,7 +5,6 @@ export default async function setupLogger(level?: LevelName) {
     level: level || "WARNING",
     handlers: ["console"],
   };
-  const getter = (k: string) => baseLogger;
   await setup({
     handlers: {
       console: new handlers.ConsoleHandler("DEBUG", {
