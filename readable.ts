@@ -1,3 +1,4 @@
+import { Document, DOMParser } from "deno_dom/deno-dom-wasm.ts";
 import { cac } from "cac/mod.ts";
 import { processArgs } from "cac/deno/deno.ts";
 import { getLogger } from "log/mod.ts";
@@ -6,6 +7,16 @@ import { READABLE_VERSION } from "./version.ts";
 import check from "./cmd/check.ts";
 import fmt, { FmtOptions } from "./cmd/fmt.ts";
 import setupLogger from "./lib/setupLogger.ts";
+
+/**
+ * Workaround for document reference error during parsing.
+ */
+declare module globalThis {
+  var document: any;
+}
+const parser = new DOMParser();
+const doc = parser.parseFromString("<html></html>", "text/html");
+globalThis.document = doc;
 
 const cli = cac("readable")
   .version(READABLE_VERSION)
