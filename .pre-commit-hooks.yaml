@@ -1,0 +1,8 @@
+# See <https://pre-commit.com/#new-hooks> for more information on this file.
+
+- id: readable
+  name: readable
+  language: docker_image
+  types: [markdown]
+  entry: -w /src/ ghcr.io/bobheadxi/readable fmt
+
