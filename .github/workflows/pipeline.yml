@@ -6,28 +6,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.31.1
+          deno-version: v1.33.4
       - run: ./dev env
       - run: ./dev build docker
   fmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.31.1
+          deno-version: v1.33.4
       - run: ./dev env
       - run: ./dev fmt check
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.33.4
+      - run: deno lint
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.31.1
+          deno-version: v1.33.4
       - run: ./dev env
       - run: ./dev test
       - uses: codecov/codecov-action@v1

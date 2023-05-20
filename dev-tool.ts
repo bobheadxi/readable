@@ -11,26 +11,29 @@ interface DevEnv {
   deno: { deno: string; v8: string; typescript: string };
 
   // make indexable
+  // deno-lint-ignore no-explicit-any
   [k: string]: any;
 }
 
 async function getDevEnv(): Promise<DevEnv> {
-  const revparse = Deno.run({
-    cmd: ["git", "rev-parse", "--short", "HEAD"],
+  const revparse = new Deno.Command("git", {
+    args: ["rev-parse", "--short", "HEAD"],
     stdout: "piped",
   });
-  const commit = new TextDecoder().decode(await revparse.output()).trim();
-  revparse.close();
+  const commit = new TextDecoder().decode((await revparse.output()).stdout)
+    .trim();
 
-  const namerev = Deno.run({
-    cmd: ["git", "name-rev", "--tags", "--name-only", commit],
+  const namerev = new Deno.Command("git", {
+    args: ["name-rev", "--tags", "--name-only", commit],
     stdout: "piped",
   });
-  const tag = new TextDecoder().decode(await namerev.output()).trim();
-  namerev.close();
+  const tag = new TextDecoder().decode((await namerev.output()).stdout).trim();
 
-  const diff = Deno.run({ cmd: ["git", "diff", "--quiet"] });
-  const { code: diffStatus } = await diff.status();
+  const diff = new Deno.Command("git", {
+    args: ["diff", "--quiet"],
+    stdout: "piped",
+  });
+  const { code: diffStatus } = await diff.output();
 
   const env = {
     commit,
@@ -48,13 +51,13 @@ async function getDevEnv(): Promise<DevEnv> {
 const denoImportMapFlag = "--import-map=./import-map.json";
 
 interface DevScripts {
-  [k: string]: (args: string[], env: DevEnv) => Promise<void>;
+  [k: string]: (args: string[], env: DevEnv) => Promise<void> | void;
 }
 
 const helpCommand = "help";
 
 const devScripts: DevScripts = {
-  [helpCommand]: async () => {
+  [helpCommand]: () => {
     console.log("READABLE DEV TOOL");
     console.log("=================");
     console.log(`Available commands:\n`);
@@ -66,7 +69,7 @@ const devScripts: DevScripts = {
       "For more help, refer to https://github.com/bobheadxi/readable/blob/main/CONTRIBUTING.md",
     );
   },
-  env: async (args, env) => {
+  env: (args, env) => {
     if (args.length === 0) {
       console.log(env);
     } else {
@@ -93,14 +96,14 @@ const devScripts: DevScripts = {
     const check = args ? args[0] === "check" : false;
     const watch = args ? args[0] === "watch" : false;
     const dir = check || watch ? args[1] : args[0];
-    const cmd = ["deno", "fmt"];
+    const denoArgs = ["fmt"];
     if (check) {
-      cmd.push("--check");
+      denoArgs.push("--check");
     } else {
-      cmd.push("--quiet");
+      denoArgs.push("--quiet");
     }
     if (watch) {
-      cmd.push("--watch");
+      denoArgs.push("--watch");
     }
     // 'deno fmt' does not have glob support yet: https://github.com/denoland/deno/issues/6365
     // so we implement our own. this is required because 'deno fmt' now formats markdown,
@@ -109,8 +112,8 @@ const devScripts: DevScripts = {
     console.log(`${check ? "Checking" : "Formatting"} '${globPattern}'`);
     for await (const f of expandGlob(globPattern)) {
       if (!f.name.endsWith(".ts")) continue;
-      const p = Deno.run({ cmd: [...cmd, f.path] });
-      const { code } = await p.status();
+      const p = new Deno.Command("deno", { args: [...denoArgs, f.path] });
+      const { code } = await p.output();
       if (code) {
         throw new Error(`fmt exited with status ${code} on file ${f.path}`);
       }
@@ -129,16 +132,15 @@ const devScripts: DevScripts = {
     if (await exists(coverageDir)) {
       await Deno.remove(coverageDir, { recursive: true });
     }
-    const test = Deno.run({
-      cmd: [
-        "deno",
+    const test = new Deno.Command("deno", {
+      args: [
         "test",
         denoImportMapFlag,
         `--coverage=${coverageDir}`,
         ...args,
       ],
     });
-    const { code: testCode } = await test.status();
+    const { code: testCode } = await test.output();
     if (testCode) {
       throw new Error(`test exited with status ${testCode}`);
     }
@@ -146,16 +148,15 @@ const devScripts: DevScripts = {
     if (await exists(coverageSummary)) {
       await Deno.remove(coverageSummary);
     }
-    const renderCoverage = Deno.run({
-      cmd: [
-        "deno",
+    const renderCoverage = new Deno.Command("deno", {
+      args: [
         "coverage",
         coverageDir,
         "--lcov",
         `--output=${coverageSummary}`,
       ],
     });
-    const { code: coverageCode } = await renderCoverage.status();
+    const { code: coverageCode } = await renderCoverage.output();
     console.log(`coverage render exited with status ${coverageCode}`);
   },
   /**
@@ -169,18 +170,17 @@ const devScripts: DevScripts = {
     if (!install) {
       target.push(...args);
     }
-    const cmd = [
-      "deno",
+    const denoArgs = [
       install ? "install" : "run",
       denoImportMapFlag,
       "--allow-read",
       "--allow-write",
     ];
     if (install) {
-      cmd.push("--force"); // force install
+      denoArgs.push("--force"); // force install
     }
-    const p = Deno.run({ cmd: [...cmd, ...target] });
-    const { code } = await p.status();
+    const p = new Deno.Command("deno", { args: [...denoArgs, ...target] });
+    const { code } = await p.output();
     if (code) {
       console.error(`readable exited with status ${code}`);
       Deno.exit(code);
@@ -228,21 +228,21 @@ const devScripts: DevScripts = {
       console.warn("Warning: building dirty commit");
     }
     switch (target) {
-      case "docker":
-        const p = Deno.run({
-          cmd: [
-            "docker",
+      case "docker": {
+        const p = new Deno.Command("docker", {
+          args: [
             "build",
             "-t",
             `bobheadxi/readable:${env.revision}`,
             ".",
           ],
         });
-        const { code } = await p.status();
+        const { code } = await p.output();
         if (code) {
           throw new Error(`command failed with status ${code}`);
         }
         break;
+      }
       default:
         throw new Error(`unknown target ${target}`);
     }
@@ -262,17 +262,17 @@ export const READABLE_COMMIT = "${env.commit}";
 `,
     );
 
-    const commit = Deno.run({
-      cmd: ["git", "commit", "-a", "-m", `all: release readable@${version}`],
+    const commit = new Deno.Command("git", {
+      args: ["commit", "-a", "-m", `all: release readable@${version}`],
     });
-    const { code: commitStatus } = await commit.status();
+    const { code: commitStatus } = await commit.output();
     if (commitStatus) {
       throw new Error("failed to commit");
     }
-    const tag = Deno.run({
-      cmd: ["git", "tag", version, "-m", `readable@${version}`],
+    const tag = new Deno.Command("git", {
+      args: ["git", "tag", version, "-m", `readable@${version}`],
     });
-    const { code: tagStatus } = await tag.status();
+    const { code: tagStatus } = await tag.output();
     if (tagStatus) {
       throw new Error("failed to tag");
     }

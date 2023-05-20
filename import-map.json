@@ -1,17 +1,17 @@
 {
-   "imports": {
-      "testing/": "https://deno.land/std@0.178.0/testing/",
-      "fmt/": "https://deno.land/std@0.178.0/fmt/",
-      "fs/": "https://deno.land/std@0.178.0/fs/",
-      "log/": "https://deno.land/std@0.178.0/log/",
+  "imports": {
+    "testing/": "https://deno.land/std@0.188.0/testing/",
+    "fmt/": "https://deno.land/std@0.188.0/fmt/",
+    "fs/": "https://deno.land/std@0.188.0/fs/",
+    "log/": "https://deno.land/std@0.188.0/log/",
+    "deno_dom/": "https://deno.land/x/deno_dom@v0.1.38/",
 
-      "cac/": "https://unpkg.dev/cac@6.7.12/",
-      "deno_dom/": "https://deno.land/x/deno_dom@v0.1.38/",
-      "diff": "https://cdn.skypack.dev/diff@5",
-      "remark": "https://jspm.dev/remark@13",
-      "micromark-extension-frontmatter": "https://jspm.dev/micromark-extension-frontmatter@1",
-      "mdast-util-frontmatter": "https://jspm.dev/mdast-util-frontmatter@1",
-      "remark-gfm": "https://cdn.skypack.dev/remark-gfm@1",
-      "remark-math": "https://cdn.skypack.dev/remark-math@5"
-   }
+    "cac/": "https://unpkg.dev/cac@6.7.12/",
+    "diff": "https://cdn.skypack.dev/diff@5",
+    "remark": "https://jspm.dev/remark@13",
+    "micromark-extension-frontmatter": "https://jspm.dev/micromark-extension-frontmatter@1",
+    "mdast-util-frontmatter": "https://jspm.dev/mdast-util-frontmatter@1",
+    "remark-gfm": "https://cdn.skypack.dev/remark-gfm@1",
+    "remark-math": "https://cdn.skypack.dev/remark-math@5"
+  }
 }
