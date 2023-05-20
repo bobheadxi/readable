@@ -1,4 +1,4 @@
-FROM denoland/deno:1.19.1
+FROM denoland/deno:1.33.4
 
 WORKDIR /bin
 COPY . .
