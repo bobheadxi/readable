@@ -1,0 +1,15 @@
+name: Readable Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  readable_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run readable
+      uses: ./
+
