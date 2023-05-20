@@ -104,6 +104,7 @@ export interface ParentNode extends Node {
  * Describes if the given node has children.
  */
 export function isParentNode(n: Node): n is ParentNode {
+  // deno-lint-ignore no-explicit-any
   return (n as any).children;
 }
 
@@ -118,6 +119,7 @@ export interface LiteralNode extends Node {
  * Describes if the given node has a value.
  */
 export function isLiteralNode(n: Node): n is LiteralNode {
+  // deno-lint-ignore no-explicit-any
   return (n as any).value;
 }
 

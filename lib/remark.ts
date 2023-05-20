@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 import remarkImport from "remark";
 
 export type VFile = {

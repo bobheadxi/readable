@@ -7,7 +7,7 @@ import { diff } from "../lib/diff.ts";
 export default async function check(log: Logger, globs: string[]) {
   const results = await walkGlobs(log, globs, format);
   const errors = [];
-  for (let [path, content] of results) {
+  for (const [path, content] of results) {
     try {
       if (diff(content.rendered, content.original, { log })) {
         errors.push(`Found unformatted file: '${path}'`);

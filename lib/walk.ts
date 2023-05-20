@@ -19,7 +19,7 @@ export async function walkGlobs(
 
   // Process globs
   const results = new Map<string, FileContents>();
-  for (let glob of globs) {
+  for (const glob of globs) {
     log.debug(`processing ${glob}`);
     for await (const file of expandGlob(glob)) {
       if (file.isDirectory || file.isSymlink) continue;
