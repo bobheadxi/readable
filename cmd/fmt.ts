@@ -12,7 +12,7 @@ export default async function fmt(
   opts: FmtOptions,
 ) {
   const results = await walkGlobs(log, globs, format);
-  for (let [path, content] of results) {
+  for (const [path, content] of results) {
     if (opts.toStdout) {
       log.info(`%c${path}`, "font-weight:bold");
       log.info(content.rendered);

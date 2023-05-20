@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 import { remark } from "remark";
 
 // See https://github.com/remarkjs/remark/tree/main/packages/remark#use

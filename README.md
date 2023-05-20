@@ -14,8 +14,17 @@ readable -h
 Using [Docker](https://www.docker.com/):
 
 ```sh
-docker pull ghcr.io/bobheadxi/readable
 docker run -v $(pwd):/data ghcr.io/bobheadxi/readable
+```
+
+Using [pre-commit](https://pre-commit.com/) by adding to `.pre-commit-config.yaml`:
+
+```
+repos:
+  - repo: https://github.com/bobheadxi/readable
+    rev: main
+    hooks:
+      - id: readable
 ```
 
 ## Features

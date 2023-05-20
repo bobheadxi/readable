@@ -1,6 +1,8 @@
 // CDN distributions of this remark-frontmatter does not seem to work, so adapt from
 // https://github.com/remarkjs/remark-frontmatter
 
+// deno-lint-ignore-file no-explicit-any
+
 import { frontmatter as micromarkFrontmatter } from "micromark-extension-frontmatter";
 import {
   frontmatterFromMarkdown,
