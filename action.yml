@@ -1,0 +1,14 @@
+name: 'readable'
+description: 'Opinionated Markdown formatter, featuring semantic line breaks'
+inputs:
+  glob:
+    description: 'target files glob pattern'
+    required: true
+    default: '**.md'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - check
+    - ${{ inputs.glob }}
+
