@@ -1,8 +1,8 @@
 import { fail } from "testing/asserts.ts";
 import { getLogger } from "log/mod.ts";
+import { remark } from "remark";
 
 import format from "../../markdown/format.ts";
-import remark from "../../lib/remark.ts";
 import { diff } from "../../lib/diff.ts";
 
 import reflow from "./reflow.ts";
@@ -10,11 +10,11 @@ import { lorenIpsumLines, lorenIpsumText, TestSuite } from "../../lib/test.ts";
 
 // e2e tests just run a format
 {
-  const testRemark = remark.use(reflow);
+  const testRemark = remark().use(reflow);
   new TestSuite<string, string>(
     "plugins/readable/reflow:e2e",
-    (testCase) => {
-      const got = format(testCase.input, testRemark);
+    async (testCase) => {
+      const got = await format(testCase.input, testRemark);
       if (diff(testCase.expect, got, { log: getLogger() })) {
         fail("Unexpected diff");
       }

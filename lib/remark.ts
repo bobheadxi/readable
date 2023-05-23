@@ -1,24 +1,15 @@
 // deno-lint-ignore-file no-explicit-any
 
-import remarkImport from "remark";
-
-export type VFile = {
-  data: any;
-  messages: any[];
-  history: any[];
-  cwd: string;
-  contents: string;
-};
+import { remark } from "remark";
 
 // See https://github.com/remarkjs/remark/tree/main/packages/remark#use
 export interface Remark {
   process: (
     content: string,
-    processor: (err: any, file: VFile) => void,
-  ) => string;
+    callback?: any,
+  ) => Promise<any> | undefined;
   use: (plugin: any) => Remark;
-  data: () => any;
+  data: (key: any, value: any) => any;
 }
 
-const remark = (remarkImport as any)() as Remark;
-export default remark;
+export { remark };

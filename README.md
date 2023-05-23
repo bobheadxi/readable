@@ -19,7 +19,7 @@ docker run -v $(pwd):/data ghcr.io/bobheadxi/readable
 
 Using [pre-commit](https://pre-commit.com/) by adding to `.pre-commit-config.yaml`:
 
-```
+```yaml
 repos:
   - repo: https://github.com/bobheadxi/readable
     rev: main

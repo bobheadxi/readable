@@ -3,6 +3,7 @@ import thirdparty from "../plugins/thirdparty/mod.ts";
 
 // custom plugins
 import readable from "../plugins/readable/mod.ts";
+import stringify from "./thirdparty/stringify.ts";
 
 export default [
   thirdparty.gfm,
@@ -10,5 +11,5 @@ export default [
   // TODO this messes up with use of inline $VARIABLE
   // thirdparty.math,
   readable.reflow,
-  thirdparty.stringify,
+  stringify,
 ];

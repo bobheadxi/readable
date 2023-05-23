@@ -12,7 +12,7 @@ const DEFAULT_GLOB = "**/*.md";
 export async function walkGlobs(
   log: Logger,
   globs: string[],
-  render: (contents: string) => string,
+  render: (contents: string) => Promise<string>,
 ): Promise<Map<string, FileContents>> {
   // Set default globs
   if (globs.length == 0) globs.push(DEFAULT_GLOB);
@@ -28,7 +28,7 @@ export async function walkGlobs(
         const contentsStr = contents.toString();
         results.set(file.path.replace(Deno.cwd(), ""), {
           original: contentsStr,
-          rendered: render(contentsStr),
+          rendered: await render(contentsStr),
           fullPath: file.path,
         });
       } catch (err) {

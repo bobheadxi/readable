@@ -8,10 +8,11 @@
 
     "cac/": "https://unpkg.dev/cac@6.7.12/",
     "diff": "https://cdn.skypack.dev/diff@5",
-    "remark": "https://jspm.dev/remark@13",
-    "micromark-extension-frontmatter": "https://jspm.dev/micromark-extension-frontmatter@1",
-    "mdast-util-frontmatter": "https://jspm.dev/mdast-util-frontmatter@1",
-    "remark-gfm": "https://cdn.skypack.dev/remark-gfm@1",
-    "remark-math": "https://cdn.skypack.dev/remark-math@5"
+    "remark": "https://esm.sh/remark@14.0.3",
+    "micromark-extension-frontmatter": "https://esm.sh/micromark-extension-frontmatter@1.1.0",
+    "mdast-util-frontmatter": "https://esm.sh/mdast-util-frontmatter@1.0.1",
+    "remark-gfm": "https://esm.sh/remark-gfm@3.0.1",
+    "remark-math": "https://esm.sh/remark-math@5.1.1",
+    "remark-stringify": "https://esm.sh/remark-stringify@10"
   }
 }
