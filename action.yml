@@ -1,5 +1,8 @@
-name: 'readable'
+name: 'Readable: Semantic Line Breaks'
 description: 'Opinionated Markdown formatter, featuring semantic line breaks'
+branding:
+  icon: 'align-left'
+  color: 'orange'
 inputs:
   glob:
     description: 'target files glob pattern'
@@ -11,4 +14,3 @@ runs:
   args:
     - check
     - ${{ inputs.glob }}
-
