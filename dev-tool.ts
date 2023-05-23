@@ -149,7 +149,7 @@ const devScripts: DevScripts = {
     if (testCode) {
       throw new Error(`test exited with status ${testCode}`);
     }
-    console.log("all tests ok!")
+    console.log("all tests ok!");
 
     const coverageSummary = `${coverageDir}.lcov`;
     if (await exists(coverageSummary)) {

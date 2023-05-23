@@ -16,11 +16,9 @@ function frontmatter(this: any, options: any) {
   add("fromMarkdownExtensions", frontmatterFromMarkdown(options));
   add("toMarkdownExtensions", frontmatterToMarkdown(options));
   function add(field: any, value: any) {
-    const list = (
-      data[field] ? data[field] : (data[field] = [])
-    )
+    const list = data[field] ? data[field] : (data[field] = []);
 
-    list.push(value)
+    list.push(value);
   }
 }
 
