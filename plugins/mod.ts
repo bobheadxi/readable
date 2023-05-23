@@ -10,5 +10,4 @@ export default [
   // TODO this messes up with use of inline $VARIABLE
   // thirdparty.math,
   readable.reflow,
-  thirdparty.stringify,
 ];

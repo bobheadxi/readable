@@ -1,5 +1,7 @@
 import { exists, expandGlob } from "fs/mod.ts";
 
+import "./docshim.ts";
+
 interface DevEnv {
   // readable metadata
   revision: string;
@@ -140,11 +142,15 @@ const devScripts: DevScripts = {
         `--coverage=${coverageDir}`,
         ...args,
       ],
+      stdout: "inherit",
+      stderr: "inherit",
     });
     const { code: testCode } = await test.output();
     if (testCode) {
       throw new Error(`test exited with status ${testCode}`);
     }
+    console.log("all tests ok!")
+
     const coverageSummary = `${coverageDir}.lcov`;
     if (await exists(coverageSummary)) {
       await Deno.remove(coverageSummary);
@@ -158,7 +164,9 @@ const devScripts: DevScripts = {
       ],
     });
     const { code: coverageCode } = await renderCoverage.output();
-    console.log(`coverage render exited with status ${coverageCode}`);
+    if (coverageCode != 0) {
+      console.warn(`coverage render exited with status ${coverageCode}`);
+    }
   },
   /**
    * Run readable.

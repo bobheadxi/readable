@@ -9,14 +9,18 @@ import {
   frontmatterToMarkdown,
 } from "mdast-util-frontmatter";
 
-import { remark } from "../../lib/remark.ts";
+function frontmatter(this: any, options: any) {
+  const data = this.data();
 
-function frontmatter(options: any) {
   add("micromarkExtensions", micromarkFrontmatter(options));
   add("fromMarkdownExtensions", frontmatterFromMarkdown(options));
   add("toMarkdownExtensions", frontmatterToMarkdown(options));
   function add(field: any, value: any) {
-    remark.data(field, value);
+    const list = (
+      data[field] ? data[field] : (data[field] = [])
+    )
+
+    list.push(value)
   }
 }
 
